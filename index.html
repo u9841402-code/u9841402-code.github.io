@@ -32,7 +32,7 @@ body{
   color:var(--text);font-family:'Noto Sans TC',sans-serif;font-weight:500;min-height:100vh;
 }
 
-.container{max-width:1100px;margin:0 auto;padding:40px 20px 60px;}
+.container{max-width:1100px;margin:0 auto;padding:40px 20px 60px;position:relative;z-index:1;}
 
 /* ── HEADER ── */
 .header{text-align:center;margin-bottom:44px;padding-bottom:32px;border-bottom:3px solid var(--gold);background:radial-gradient(ellipse at 50% 0%,rgba(212,160,23,.12) 0%,transparent 70%);border-radius:16px;padding-top:20px;}
@@ -291,37 +291,9 @@ body{
 .popup-close { background: var(--gold); color: #000; }
 
 
-/* Movie poster cinematic overlay */
-body::before {
-  content:'';
-  position:fixed;top:0;left:0;right:0;bottom:0;
-  background:
-    radial-gradient(ellipse at 25% 30%, rgba(180,120,30,0.12) 0%, transparent 50%),
-    radial-gradient(ellipse at 75% 70%, rgba(26,35,126,0.10) 0%, transparent 50%);
-  pointer-events:none;z-index:0;
-}
-.container { position:relative;z-index:1; }
 
-/* Film grain texture on hero */
-.hero-area::after {
-  content:'';
-  position:absolute;inset:0;z-index:4;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='115'%3E%3Cfilter id='grain'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23grain)' opacity='0.06'/%3E%3C/svg%3E");
-  pointer-events:none;mix-blend-mode:overlay;
-}
-/* Dramatic vignette on hero */
-.hero-area::before {
-  content:'';
-  position:absolute;inset:0;z-index:3;
-  background: radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%);
-  pointer-events:none;
-}
-/* Light ray effect */
-.hero-ray {
-  position:absolute;top:0;left:30%;width:40%;height:100%;
-  background:linear-gradient(180deg,rgba(255,220,100,0.08) 0%,transparent 70%);
-  z-index:2;pointer-events:none;transform:skewX(-15deg);
-}
+
+
 
 
 /* Action buttons */
@@ -342,7 +314,13 @@ body::before {
 .rank-overlay {
   display:none; position:fixed; inset:0;
   background:rgba(0,0,0,.75); z-index:1000;
-  align-items:center; justify-content:center; padding:20px;
+  align-items:flex-start; justify-content:center;
+  padding:20px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media(min-height:600px){
+  .rank-overlay { align-items:center; }
 }
 .rank-overlay.active { display:flex; }
 
@@ -351,7 +329,9 @@ body::before {
   border: 2px solid var(--gold);
   border-radius: 20px;
   max-width: 520px; width:100%;
-  overflow: hidden;
+  max-height: 88vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 40px rgba(212,160,23,.15);
   animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
 }
@@ -399,9 +379,423 @@ body::before {
 
 .rank-value { font-size:13px; font-weight:900; text-align:right; min-width:70px; }
 
+
+@media(max-width:480px){
+  .rank-item { padding: 10px 12px; gap: 10px; }
+  .rank-name { font-size:13px; }
+  .rank-desc { font-size:10px; }
+  .rank-value { font-size:12px; min-width:60px; }
+  .rank-num { width:28px; height:28px; font-size:12px; }
+  .rank-bar-wrap { width:70px; }
+  .rank-title { font-size:18px; }
+  .rank-list { padding: 12px 14px 18px; gap:8px; }
+  .rank-header { padding: 16px 16px 12px; }
+}
+
 </style>
 </head>
 <body>
+
+<div id="avengersBg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden;">
+  <svg width="100%" height="100%" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <!-- Dramatic background gradient -->
+      <radialGradient id="bgGrad" cx="50%" cy="30%" r="70%">
+        <stop offset="0%" style="stop-color:#2A1800;stop-opacity:1"/>
+        <stop offset="60%" style="stop-color:#120A00;stop-opacity:1"/>
+        <stop offset="100%" style="stop-color:#050200;stop-opacity:1"/>
+      </radialGradient>
+      <!-- Gold glow gradient -->
+      <radialGradient id="goldGlow1" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" style="stop-color:#D4A017;stop-opacity:0.25"/>
+        <stop offset="100%" style="stop-color:#D4A017;stop-opacity:0"/>
+      </radialGradient>
+      <radialGradient id="goldGlow2" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" style="stop-color:#C8960A;stop-opacity:0.15"/>
+        <stop offset="100%" style="stop-color:#C8960A;stop-opacity:0"/>
+      </radialGradient>
+      <radialGradient id="blueGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" style="stop-color:#1A237E;stop-opacity:0.2"/>
+        <stop offset="100%" style="stop-color:#1A237E;stop-opacity:0"/>
+      </radialGradient>
+      <filter id="heroBlur">
+        <feGaussianBlur stdDeviation="0.8"/>
+      </filter>
+      <filter id="softGlow">
+        <feGaussianBlur stdDeviation="4" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="strongGlow">
+        <feGaussianBlur stdDeviation="8" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <linearGradient id="heroFade" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:#8B7040;stop-opacity:0.9"/>
+        <stop offset="70%" style="stop-color:#5A4520;stop-opacity:0.6"/>
+        <stop offset="100%" style="stop-color:#2A1800;stop-opacity:0"/>
+      </linearGradient>
+      <linearGradient id="heroFade2" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:#6B5530;stop-opacity:0.8"/>
+        <stop offset="60%" style="stop-color:#3A2810;stop-opacity:0.5"/>
+        <stop offset="100%" style="stop-color:#1A1000;stop-opacity:0"/>
+      </linearGradient>
+      <linearGradient id="ironManGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#FF6B00;stop-opacity:0.8"/>
+        <stop offset="100%" style="stop-color:#D4A017;stop-opacity:0.6"/>
+      </linearGradient>
+      <linearGradient id="capGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#1A56C8;stop-opacity:0.7"/>
+        <stop offset="100%" style="stop-color:#8B0000;stop-opacity:0.5"/>
+      </linearGradient>
+      <linearGradient id="thorGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#88AAFF;stop-opacity:0.7"/>
+        <stop offset="100%" style="stop-color:#D4A017;stop-opacity:0.5"/>
+      </linearGradient>
+      <linearGradient id="hulkGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style="stop-color:#2E7D32;stop-opacity:0.7"/>
+        <stop offset="100%" style="stop-color:#1B5E20;stop-opacity:0.4"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Base background -->
+    <rect width="1200" height="900" fill="url(#bgGrad)"/>
+
+    <!-- Atmospheric light beams -->
+    <ellipse cx="600" cy="-100" rx="500" ry="300" fill="url(#goldGlow1)" opacity="0.6"/>
+    <ellipse cx="200" cy="400" rx="300" ry="200" fill="url(#blueGlow)" opacity="0.4"/>
+    <ellipse cx="1000" cy="300" rx="250" ry="180" fill="url(#goldGlow2)" opacity="0.3"/>
+
+    <!-- ══ IRON MAN (far left, dramatic) ══ -->
+    <g transform="translate(60, 80)" opacity="0.72" filter="url(#heroBlur)">
+      <!-- Body glow aura -->
+      <ellipse cx="90" cy="380" rx="80" ry="180" fill="url(#ironManGlow)" opacity="0.3"/>
+      <!-- Legs -->
+      <rect x="62" y="500" width="28" height="160" rx="8" fill="#8B3A00"/>
+      <rect x="100" y="500" width="28" height="160" rx="8" fill="#8B3A00"/>
+      <!-- Boot thrusters -->
+      <ellipse cx="76" cy="660" rx="16" ry="8" fill="#FF6B00" opacity="0.8"/>
+      <ellipse cx="114" cy="660" rx="16" ry="8" fill="#FF6B00" opacity="0.8"/>
+      <!-- Torso armor - detailed -->
+      <rect x="52" y="300" width="96" height="200" rx="12" fill="#9A4000"/>
+      <!-- Chest plate layers -->
+      <rect x="58" y="310" width="84" height="180" rx="10" fill="#7A3200"/>
+      <rect x="65" y="320" width="70" height="60" rx="8" fill="#8B3800"/>
+      <!-- Arc reactor -->
+      <circle cx="100" cy="360" r="18" fill="#001133" opacity="0.9"/>
+      <circle cx="100" cy="360" r="13" fill="#0088FF" opacity="0.7"/>
+      <circle cx="100" cy="360" r="8" fill="#44AAFF" filter="url(#strongGlow)"/>
+      <circle cx="100" cy="360" r="4" fill="white" opacity="0.9"/>
+      <!-- Reactor glow rings -->
+      <circle cx="100" cy="360" r="20" fill="none" stroke="#0088FF" stroke-width="1.5" opacity="0.4"/>
+      <circle cx="100" cy="360" r="25" fill="none" stroke="#0066CC" stroke-width="1" opacity="0.25"/>
+      <!-- Shoulders - pauldrons -->
+      <ellipse cx="52" cy="310" rx="28" ry="20" fill="#9A4000"/>
+      <ellipse cx="148" cy="310" rx="28" ry="20" fill="#9A4000"/>
+      <!-- Arms -->
+      <rect x="18" y="308" width="34" height="100" rx="10" fill="#8B3500"/>
+      <rect x="148" y="308" width="34" height="100" rx="10" fill="#8B3500"/>
+      <!-- Gauntlets -->
+      <rect x="14" y="405" width="38" height="50" rx="8" fill="#7A3000"/>
+      <rect x="148" y="405" width="38" height="50" rx="8" fill="#7A3000"/>
+      <!-- Right palm repulsor FIRING -->
+      <circle cx="187" cy="435" r="12" fill="#FF8800" opacity="0.9" filter="url(#strongGlow)"/>
+      <circle cx="187" cy="435" r="6" fill="#FFCC00"/>
+      <!-- Repulsor beam -->
+      <line x1="187" y1="435" x2="320" y2="350" stroke="#FF8800" stroke-width="3" opacity="0.6" filter="url(#softGlow)"/>
+      <line x1="187" y1="435" x2="320" y2="350" stroke="#FFCC44" stroke-width="1.5" opacity="0.8"/>
+      <!-- Neck -->
+      <rect x="82" y="260" width="36" height="44" rx="8" fill="#8B3500"/>
+      <!-- Head/Helmet - detailed Iron Man -->
+      <ellipse cx="100" cy="220" rx="46" ry="52" fill="#9A4000"/>
+      <ellipse cx="100" cy="215" rx="40" ry="44" fill="#8B3800"/>
+      <!-- Face plate -->
+      <path d="M68,210 Q100,185 132,210 L128,240 Q100,255 72,240 Z" fill="#7A3000"/>
+      <!-- Eye slits glowing -->
+      <path d="M74,205 Q85,198 96,205 L94,215 Q83,220 75,215 Z" fill="#FF8800" opacity="0.9" filter="url(#softGlow)"/>
+      <path d="M104,205 Q115,198 126,205 L124,215 Q113,220 105,215 Z" fill="#FF8800" opacity="0.9" filter="url(#softGlow)"/>
+      <!-- Helmet ridge -->
+      <path d="M70,175 Q100,155 130,175 Q115,168 100,165 Q85,168 70,175 Z" fill="#AA4500"/>
+      <!-- Chin plate -->
+      <path d="M78,243 Q100,256 122,243 L118,255 Q100,264 82,255 Z" fill="#6A2800"/>
+    </g>
+
+    <!-- ══ CAPTAIN AMERICA (left-center, shield raised) ══ -->
+    <g transform="translate(240, 120)" opacity="0.68" filter="url(#heroBlur)">
+      <!-- Body glow -->
+      <ellipse cx="95" cy="370" rx="75" ry="160" fill="url(#capGlow)" opacity="0.25"/>
+      <!-- Legs -->
+      <rect x="65" y="480" width="26" height="150" rx="7" fill="#1A2A6B"/>
+      <rect x="100" y="480" width="26" height="150" rx="7" fill="#1A2A6B"/>
+      <rect x="63" y="620" width="30" height="20" rx="5" fill="#0D1A4A"/>
+      <rect x="98" y="620" width="30" height="20" rx="5" fill="#0D1A4A"/>
+      <!-- Torso - star-spangled -->
+      <rect x="55" y="290" width="90" height="190" rx="10" fill="#1A3080"/>
+      <rect x="60" y="295" width="80" height="180" rx="9" fill="#1E3A8A"/>
+      <!-- White stripes on torso -->
+      <rect x="60" y="330" width="80" height="12" rx="3" fill="rgba(255,255,255,0.15)"/>
+      <rect x="60" y="355" width="80" height="12" rx="3" fill="rgba(255,255,255,0.10)"/>
+      <rect x="60" y="380" width="80" height="12" rx="3" fill="rgba(255,255,255,0.08)"/>
+      <!-- Star on chest -->
+      <polygon points="95,305 99,316 111,316 102,323 105,334 95,327 85,334 88,323 79,316 91,316" fill="white" opacity="0.85"/>
+      <!-- Belt -->
+      <rect x="55" y="468" width="90" height="14" rx="4" fill="#8B6914"/>
+      <!-- Shoulders -->
+      <ellipse cx="55" cy="300" rx="26" ry="18" fill="#1A3080"/>
+      <ellipse cx="145" cy="300" rx="26" ry="18" fill="#1A3080"/>
+      <!-- Arms -->
+      <rect x="22" y="296" width="33" height="90" rx="9" fill="#1E3A8A"/>
+      <rect x="145" y="296" width="33" height="90" rx="9" fill="#1E3A8A"/>
+      <!-- Left arm raised holding shield -->
+      <rect x="10" y="200" width="30" height="100" rx="9" fill="#1E3A8A" transform="rotate(-30,25,250)"/>
+      <!-- THE SHIELD - iconic -->
+      <g transform="translate(-60, 150) rotate(-15)">
+        <!-- Shield base -->
+        <circle cx="30" cy="30" r="55" fill="#8B0000"/>
+        <circle cx="30" cy="30" r="44" fill="#CC0000"/>
+        <circle cx="30" cy="30" r="33" fill="white"/>
+        <circle cx="30" cy="30" r="22" fill="#1A56C8"/>
+        <circle cx="30" cy="30" r="11" fill="#1A56C8"/>
+        <!-- Star -->
+        <polygon points="30,16 33.5,25.5 44,25.5 36,31.5 38.5,42 30,36 21.5,42 24,31.5 16,25.5 26.5,25.5" fill="white" opacity="0.95"/>
+        <!-- Shield ring highlights -->
+        <circle cx="30" cy="30" r="55" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        <circle cx="30" cy="30" r="44" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+      </g>
+      <!-- Neck -->
+      <rect x="82" y="252" width="32" height="42" rx="7" fill="#E8C49A"/>
+      <!-- Head - Cap helmet -->
+      <ellipse cx="98" cy="215" rx="40" ry="46" fill="#1A3080"/>
+      <!-- Helmet wings -->
+      <path d="M58,210 Q48,195 52,180 Q60,190 65,205 Z" fill="#CCCCCC" opacity="0.8"/>
+      <path d="M138,210 Q148,195 144,180 Q136,190 131,205 Z" fill="#CCCCCC" opacity="0.8"/>
+      <!-- Face -->
+      <ellipse cx="98" cy="220" rx="28" ry="32" fill="#E8C49A"/>
+      <!-- Eyes determined look -->
+      <ellipse cx="88" cy="214" rx="5" ry="5" fill="#4A3000"/>
+      <ellipse cx="108" cy="214" rx="5" ry="5" fill="#4A3000"/>
+      <ellipse cx="88" cy="214" rx="3" ry="3.5" fill="#2A1800"/>
+      <ellipse cx="108" cy="214" rx="3" ry="3.5" fill="#2A1800"/>
+      <!-- Jaw/chin -->
+      <path d="M78,238 Q98,252 118,238 Q108,248 98,250 Q88,248 78,238 Z" fill="#D4B088"/>
+      <!-- Chin strap -->
+      <path d="M62,215 Q58,230 68,242" stroke="#1A3080" stroke-width="4" fill="none"/>
+      <path d="M134,215 Q138,230 128,242" stroke="#1A3080" stroke-width="4" fill="none"/>
+      <!-- A on helmet -->
+      <text x="86" y="200" font-size="18" font-weight="900" fill="white" opacity="0.7">A</text>
+    </g>
+
+    <!-- ══ THOR (center-right, dramatic) ══ -->
+    <g transform="translate(820, 50)" opacity="0.65" filter="url(#heroBlur)">
+      <!-- Lightning aura -->
+      <ellipse cx="100" cy="400" rx="90" ry="200" fill="url(#thorGlow)" opacity="0.35"/>
+      <!-- Lightning bolts around him -->
+      <polyline points="160,80 145,140 155,140 135,210" stroke="#AACCFF" stroke-width="2.5" fill="none" opacity="0.6" filter="url(#softGlow)"/>
+      <polyline points="40,100 55,155 46,155 62,215" stroke="#88AAFF" stroke-width="2" fill="none" opacity="0.5" filter="url(#softGlow)"/>
+      <polyline points="185,150 170,195 178,195 162,240" stroke="#CCDDFF" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <!-- Cape flowing back -->
+      <path d="M60,290 Q20,350 15,500 Q30,480 55,450 Q45,500 50,580 Q80,520 90,470 Q85,530 95,600 Q110,540 105,470 Q115,530 130,590 Q135,520 120,450 Q145,480 155,500 Q150,380 110,290 Z" fill="#8B0000" opacity="0.85"/>
+      <!-- Cape highlight -->
+      <path d="M60,290 Q40,340 30,420 Q50,400 65,370" fill="#AA1111" opacity="0.4"/>
+      <!-- Legs -->
+      <rect x="68" y="510" width="30" height="160" rx="8" fill="#2A2A3A"/>
+      <rect x="108" y="510" width="30" height="160" rx="8" fill="#2A2A3A"/>
+      <!-- Boot tops -->
+      <rect x="65" y="620" width="36" height="30" rx="6" fill="#1A1A28"/>
+      <rect x="105" y="620" width="36" height="30" rx="6" fill="#1A1A28"/>
+      <!-- Torso armor -->
+      <rect x="55" y="300" width="100" height="210" rx="12" fill="#1A1A2E"/>
+      <rect x="62" y="308" width="86" height="195" rx="10" fill="#1E1E38"/>
+      <!-- Chest circle emblem -->
+      <circle cx="105" cy="380" r="22" fill="#2A2A4A"/>
+      <circle cx="105" cy="380" r="16" fill="#88AAFF" opacity="0.3"/>
+      <!-- Disc details -->
+      <circle cx="105" cy="380" r="22" fill="none" stroke="#AABBFF" stroke-width="1.5" opacity="0.5"/>
+      <!-- Belt/skirt -->
+      <rect x="55" y="490" width="100" height="22" rx="5" fill="#8B6914"/>
+      <rect x="60" y="494" width="16" height="14" rx="3" fill="#D4A017"/>
+      <rect x="82" y="494" width="16" height="14" rx="3" fill="#D4A017"/>
+      <rect x="104" y="494" width="16" height="14" rx="3" fill="#D4A017"/>
+      <rect x="126" y="494" width="16" height="14" rx="3" fill="#D4A017"/>
+      <!-- Shoulders massive -->
+      <ellipse cx="55" cy="315" rx="32" ry="22" fill="#252535"/>
+      <ellipse cx="155" cy="315" rx="32" ry="22" fill="#252535"/>
+      <!-- Arms -->
+      <rect x="18" y="310" width="37" height="105" rx="10" fill="#1E1E38"/>
+      <rect x="155" y="310" width="37" height="105" rx="10" fill="#1E1E38"/>
+      <!-- Right arm raised - holding Mjolnir UP -->
+      <g transform="translate(155, 180)">
+        <rect x="0" y="0" width="35" height="120" rx="10" fill="#1E1E38" transform="rotate(30,17,60)"/>
+        <!-- Mjolnir handle -->
+        <rect x="20" y="-50" width="9" height="55" rx="3" fill="#8B6914"/>
+        <rect x="18" y="-52" width="13" height="8" rx="2" fill="#D4A017"/>
+        <!-- Mjolnir head -->
+        <rect x="8" y="-95" width="32" height="48" rx="6" fill="#707070"/>
+        <rect x="10" y="-93" width="28" height="44" rx="5" fill="#808080"/>
+        <!-- Hammer rune -->
+        <text x="18" y="-72" font-size="12" fill="#AAAAAA" opacity="0.7">ᚱ</text>
+        <!-- Lightning from hammer -->
+        <polyline points="24,-95 10,-130 18,-130 5,-165" stroke="#88CCFF" stroke-width="3" fill="none" opacity="0.85" filter="url(#strongGlow)"/>
+        <polyline points="24,-95 38,-128 30,-128 42,-160" stroke="#AADDFF" stroke-width="2" fill="none" opacity="0.7" filter="url(#softGlow)"/>
+        <polyline points="24,-95 -5,-125 3,-125 -10,-155" stroke="#88AAFF" stroke-width="1.5" fill="none" opacity="0.5"/>
+      </g>
+      <!-- Neck -->
+      <rect x="88" y="262" width="34" height="42" rx="7" fill="#E8C49A"/>
+      <!-- Head - Thor with beard -->
+      <ellipse cx="105" cy="222" rx="42" ry="48" fill="#E8C49A"/>
+      <!-- Hair -->
+      <path d="M63,215 Q60,170 105,155 Q150,170 147,215 Q138,175 105,170 Q72,175 63,215 Z" fill="#B8860B"/>
+      <!-- Side hair longer -->
+      <path d="M63,215 Q55,240 60,270 Q68,255 70,235" fill="#A07810" opacity="0.8"/>
+      <path d="M147,215 Q155,240 150,270 Q142,255 140,235" fill="#A07810" opacity="0.8"/>
+      <!-- Eyes intense blue -->
+      <ellipse cx="93" cy="218" rx="5" ry="5.5" fill="#1A1A2E"/>
+      <ellipse cx="117" cy="218" rx="5" ry="5.5" fill="#1A1A2E"/>
+      <ellipse cx="93" cy="218" rx="3" ry="3.5" fill="#3366AA"/>
+      <ellipse cx="117" cy="218" rx="3" ry="3.5" fill="#3366AA"/>
+      <!-- Beard -->
+      <path d="M78,240 Q83,270 90,280 Q105,290 120,280 Q127,270 132,240 Q118,255 105,258 Q92,255 78,240 Z" fill="#B8860B" opacity="0.85"/>
+      <!-- Beard texture lines -->
+      <path d="M88,248 Q95,265 105,268" stroke="#8B6914" stroke-width="1.2" fill="none" opacity="0.5"/>
+      <path d="M122,248 Q115,265 105,268" stroke="#8B6914" stroke-width="1.2" fill="none" opacity="0.5"/>
+    </g>
+
+    <!-- ══ BLACK WIDOW (right side, crouching ready) ══ -->
+    <g transform="translate(1020, 200)" opacity="0.60" filter="url(#heroBlur)">
+      <!-- Silhouette glow -->
+      <ellipse cx="75" cy="320" rx="60" ry="150" fill="rgba(200,20,20,0.08)"/>
+      <!-- Legs crouching -->
+      <path d="M55,420 Q40,460 30,520 L58,520 Q62,470 70,440 Z" fill="#0A0A0A"/>
+      <path d="M90,420 Q105,460 115,520 L88,520 Q84,470 78,440 Z" fill="#0A0A0A"/>
+      <!-- Boots -->
+      <rect x="22" y="516" width="38" height="25" rx="6" fill="#050505"/>
+      <rect x="84" y="516" width="38" height="25" rx="6" fill="#050505"/>
+      <!-- Torso - catsuit -->
+      <path d="M42,250 Q42,420 55,430 L90,430 Q103,420 103,250 Z" fill="#111111"/>
+      <path d="M45,255 Q45,415 57,425 L88,425 Q100,415 100,255 Z" fill="#1A1A1A"/>
+      <!-- Belt with Widow's Bite -->
+      <rect x="40" y="378" width="65" height="14" rx="4" fill="#2A2A2A"/>
+      <rect x="55" y="380" width="15" height="10" rx="2" fill="#8B0000" opacity="0.8"/>
+      <rect x="75" y="380" width="15" height="10" rx="2" fill="#8B0000" opacity="0.8"/>
+      <!-- Red hourglass on chest -->
+      <path d="M68,310 L82,310 L76,323 L82,336 L68,336 L74,323 Z" fill="#8B0000" opacity="0.7"/>
+      <!-- Shoulders -->
+      <ellipse cx="42" cy="258" rx="20" ry="14" fill="#111111"/>
+      <ellipse cx="103" cy="258" rx="20" ry="14" fill="#111111"/>
+      <!-- Arms -->
+      <rect x="18" y="255" width="24" height="85" rx="7" fill="#141414"/>
+      <rect x="103" y="255" width="24" height="85" rx="7" fill="#141414"/>
+      <!-- Right arm forward with Widow's Bite firing -->
+      <rect x="103" y="240" width="22" height="80" rx="7" fill="#141414" transform="rotate(-20,114,280)"/>
+      <!-- Energy blast from wrist -->
+      <circle cx="145" cy="295" r="10" fill="#8B0000" opacity="0.9" filter="url(#strongGlow)"/>
+      <circle cx="145" cy="295" r="5" fill="#FF4444"/>
+      <!-- Blast beam -->
+      <line x1="145" y1="295" x2="220" y2="250" stroke="#FF2222" stroke-width="2.5" opacity="0.5" filter="url(#softGlow)"/>
+      <!-- Wristband -->
+      <rect x="118" y="318" width="22" height="10" rx="3" fill="#333333"/>
+      <!-- Neck -->
+      <rect x="67" y="218" width="26" height="36" rx="6" fill="#E0B898"/>
+      <!-- Head - Black Widow -->
+      <ellipse cx="80" cy="190" rx="34" ry="38" fill="#2A1A0A"/>
+      <!-- Red hair detailed -->
+      <path d="M46,185 Q44,145 80,130 Q116,145 114,185 Q105,150 80,145 Q55,150 46,185 Z" fill="#8B1A00"/>
+      <path d="M46,185 Q38,200 40,230 Q50,215 52,195" fill="#7A1500" opacity="0.8"/>
+      <path d="M114,185 Q122,200 120,230 Q110,215 108,195" fill="#7A1500" opacity="0.8"/>
+      <!-- Long flowing hair -->
+      <path d="M48,188 Q35,220 38,260 Q55,240 58,210" fill="#8B1A00" opacity="0.7"/>
+      <path d="M112,188 Q125,220 122,260 Q105,240 102,210" fill="#8B1A00" opacity="0.7"/>
+      <!-- Face - sharp features -->
+      <ellipse cx="80" cy="195" rx="26" ry="28" fill="#E0B898"/>
+      <!-- Eyes - intense green -->
+      <ellipse cx="70" cy="188" rx="4.5" ry="4" fill="#1A1A00"/>
+      <ellipse cx="90" cy="188" rx="4.5" ry="4" fill="#1A1A00"/>
+      <ellipse cx="70" cy="188" rx="2.5" ry="2.5" fill="#2E7D32"/>
+      <ellipse cx="90" cy="188" rx="2.5" ry="2.5" fill="#2E7D32"/>
+      <!-- Determined expression -->
+      <path d="M66,182 Q70,178 74,182" stroke="#5A3A1A" stroke-width="1.5" fill="none"/>
+      <path d="M86,182 Q90,178 94,182" stroke="#5A3A1A" stroke-width="1.5" fill="none"/>
+      <path d="M72,205 Q80,210 88,205" stroke="#C09070" stroke-width="1.5" fill="none"/>
+    </g>
+
+    <!-- ══ HULK (far right, massive silhouette) ══ -->
+    <g transform="translate(1085, 300)" opacity="0.45" filter="url(#heroBlur)">
+      <!-- Green aura -->
+      <ellipse cx="80" cy="300" rx="100" ry="200" fill="url(#hulkGlow)" opacity="0.4"/>
+      <!-- Massive legs -->
+      <rect x="25" y="420" width="48" height="170" rx="12" fill="#2E7D32"/>
+      <rect x="88" y="420" width="48" height="170" rx="12" fill="#2E7D32"/>
+      <!-- Torn pants -->
+      <rect x="22" y="420" width="54" height="30" rx="5" fill="#4A3820"/>
+      <rect x="85" y="420" width="54" height="30" rx="5" fill="#4A3820"/>
+      <path d="M22,450 Q35,465 55,455 Q45,475 30,480" fill="#3D2E16" opacity="0.7"/>
+      <path d="M139,450 Q126,465 106,455 Q116,475 131,480" fill="#3D2E16" opacity="0.7"/>
+      <!-- Torso MASSIVE -->
+      <rect x="15" y="230" width="135" height="195" rx="18" fill="#2E7D32"/>
+      <rect x="22" y="238" width="121" height="180" rx="15" fill="#388E3C"/>
+      <!-- Muscle definition on chest -->
+      <path d="M40,280 Q82,265 125,280" stroke="#2E7D32" stroke-width="3" fill="none" opacity="0.5"/>
+      <path d="M35,310 Q82,295 130,310" stroke="#2E7D32" stroke-width="2.5" fill="none" opacity="0.4"/>
+      <path d="M32,340 Q82,325 133,340" stroke="#2E7D32" stroke-width="2" fill="none" opacity="0.3"/>
+      <!-- Abs -->
+      <ellipse cx="82" cy="365" rx="18" ry="12" fill="#2E7D32" opacity="0.5"/>
+      <ellipse cx="82" cy="392" rx="18" ry="12" fill="#2E7D32" opacity="0.4"/>
+      <!-- MASSIVE shoulders -->
+      <ellipse cx="15" cy="248" rx="42" ry="30" fill="#2E7D32"/>
+      <ellipse cx="150" cy="248" rx="42" ry="30" fill="#2E7D32"/>
+      <!-- Arms HUGE raised in rage -->
+      <rect x="-50" y="220" width="65" height="120" rx="18" fill="#2E7D32" transform="rotate(25,-17,280)"/>
+      <rect x="150" y="215" width="65" height="120" rx="18" fill="#2E7D32" transform="rotate(-30,182,275)"/>
+      <!-- Fists clenched -->
+      <ellipse cx="-30" cy="185" rx="32" ry="28" fill="#388E3C" transform="rotate(20,-10,205)"/>
+      <ellipse cx="200" cy="180" rx="32" ry="28" fill="#388E3C" transform="rotate(-25,185,200)"/>
+      <!-- Neck thick -->
+      <rect x="55" y="185" width="55" height="50" rx="10" fill="#2E7D32"/>
+      <!-- Head - Hulk brutal -->
+      <ellipse cx="82" cy="155" rx="52" ry="58" fill="#388E3C"/>
+      <!-- Brow ridge prominent -->
+      <path d="M30,135 Q82,110 134,135 Q120,120 82,118 Q44,120 30,135 Z" fill="#2E7D32"/>
+      <!-- Eyes white with rage -->
+      <ellipse cx="62" cy="142" rx="11" ry="9" fill="#FFFFFF" opacity="0.9"/>
+      <ellipse cx="102" cy="142" rx="11" ry="9" fill="#FFFFFF" opacity="0.9"/>
+      <ellipse cx="62" cy="143" rx="6" ry="5" fill="#1A0000"/>
+      <ellipse cx="102" cy="143" rx="6" ry="5" fill="#1A0000"/>
+      <!-- Rage wrinkles -->
+      <path d="M45,128 Q55,122 65,128" stroke="#2E7D32" stroke-width="2.5" fill="none"/>
+      <path d="M99,128 Q109,122 119,128" stroke="#2E7D32" stroke-width="2.5" fill="none"/>
+      <!-- Mouth - snarl -->
+      <path d="M52,172 Q82,185 112,172 Q95,180 82,182 Q69,180 52,172 Z" fill="#1A5C1A"/>
+      <path d="M52,172 Q62,175 72,170" stroke="#2E7D32" stroke-width="1.5" fill="none"/>
+      <path d="M112,172 Q102,175 92,170" stroke="#2E7D32" stroke-width="1.5" fill="none"/>
+      <!-- Teeth showing -->
+      <rect x="65" y="172" width="10" height="8" rx="2" fill="white" opacity="0.7"/>
+      <rect x="78" y="172" width="10" height="8" rx="2" fill="white" opacity="0.7"/>
+      <rect x="91" y="172" width="10" height="8" rx="2" fill="white" opacity="0.7"/>
+    </g>
+
+    <!-- ══ Decorative elements ══ -->
+    <!-- Avengers A logo watermark center top -->
+    <g transform="translate(540,20)" opacity="0.06">
+      <circle cx="60" cy="65" r="60" fill="none" stroke="#D4A017" stroke-width="4"/>
+      <text x="60" y="88" text-anchor="middle" font-size="72" font-weight="900" fill="#D4A017" font-family="Arial,sans-serif">A</text>
+    </g>
+
+    <!-- Ground light effect -->
+    <ellipse cx="600" cy="900" rx="700" ry="80" fill="#D4A017" opacity="0.04"/>
+
+    <!-- Subtle scan lines for cinematic feel -->
+    <rect width="1200" height="900" fill="url(#scanlines)" opacity="0.03"/>
+
+    <!-- Bottom fade to page bg -->
+    <rect x="0" y="700" width="1200" height="200" fill="url(#bottomFade)"/>
+    <defs>
+      <linearGradient id="bottomFade" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" style="stop-color:#120A00;stop-opacity:0"/>
+        <stop offset="100%" style="stop-color:#1C1008;stop-opacity:1"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</div>
+
 <div class="container">
 
 
@@ -456,9 +850,9 @@ body::before {
   </div>
   <div><span class="brand-tag">AI Gold Trade</span></div>
   <div class="main-title">EA 策略<span>績效報表</span></div>
-  <div class="sub-title">3/30 ～ 4/23 完整績效統計</div>
+  <div class="sub-title">3/30 ～ 4/24 完整績效統計</div>
   <div class="date-row">
-    <span class="date-pill">📅 更新至 2026.04.23</span>
+    <span class="date-pill">📅 更新至 2026.04.24</span>
     <span class="date-pill cent-pill">💲 美分帳戶（¢）</span>
   </div>
 
@@ -480,7 +874,7 @@ body::before {
 <div class="strategy-card">
   <div class="card-topbar" style="background:linear-gradient(90deg,#B8860B,#FFD700);"></div>
   <button class="info-btn" onclick="openPopup('thunder',event)" title="策略說明">？</button>
-  <div class="hero-area" style="background:linear-gradient(160deg,#1a1a2e,#16213e,#0f3460);"><div class="hero-ray"></div><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
+  <div class="hero-area" style="background:linear-gradient(160deg,#1a1a2e,#16213e,#0f3460);"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
       <defs><filter id="glow1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
       <rect width="300" height="115" fill="#0a0a2e"/>
       <circle cx="20" cy="15" r="1.2" fill="white" opacity=".7"/><circle cx="60" cy="8" r="1" fill="white" opacity=".5"/><circle cx="100" cy="20" r="1.5" fill="white" opacity=".6"/><circle cx="200" cy="10" r="1" fill="white" opacity=".4"/><circle cx="250" cy="25" r="1.2" fill="white" opacity=".6"/><circle cx="280" cy="12" r="1" fill="white" opacity=".5"/>
@@ -513,8 +907,8 @@ body::before {
   <div class="stats-section">
     <div class="stat-row-3">
       <div class="stat-box"><div class="stat-label" title="歷史最大浮虧">最大回撤</div><div class="stat-value v-red">-17,421¢</div></div>
-      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+31.48%</div></div>
-      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~78.7%</div></div>
+      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+32.66%</div></div>
+      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~81.7%</div></div>
     </div>
   </div>
   <div class="table-section">
@@ -525,14 +919,15 @@ body::before {
     </div>
     <table class="perf-table"><thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
       <tbody id="r1">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+1,702</td><td class="pos">+1.70%</td><td class="neg">-2,916</td><td class="neg">-2.92%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+1,182</td><td class="pos">+1.18%</td><td class="neg">-980</td><td class="neg">-0.98%</td></tr>
+        <tr><td>4/23</td><td class="pos">+1,702</td><td class="pos">+1.70%</td><td class="neg">-2,916</td><td class="neg">-2.92%</td></tr>
         <tr><td>4/22</td><td class="pos">+809</td><td class="pos">+0.81%</td><td class="neg">-1,265</td><td class="neg">-1.27%</td></tr>
         <tr><td>4/21</td><td class="pos">+1,666</td><td class="pos">+1.67%</td><td class="neg">-792</td><td class="neg">-0.79%</td></tr>
         <tr><td>4/20</td><td class="pos">+78</td><td class="pos">+0.08%</td><td class="neg">-8,593</td><td class="neg">-8.59%</td></tr>
-        <tr><td>4/17</td><td class="pos">+980</td><td class="pos">+0.98%</td><td class="neg">-3,134</td><td class="neg">-3.13%</td></tr>
       </tbody>
       <tbody id="a1" style="display:none">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+1,702</td><td class="pos">+1.70%</td><td class="neg">-2,916</td><td class="neg">-2.92%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+1,182</td><td class="pos">+1.18%</td><td class="neg">-980</td><td class="neg">-0.98%</td></tr>
+        <tr ><td>4/23</td><td class="pos">+1,702</td><td class="pos">+1.70%</td><td class="neg">-2,916</td><td class="neg">-2.92%</td></tr>
         <tr><td>4/22</td><td class="pos">+809</td><td class="pos">+0.81%</td><td class="neg">-1,265</td><td class="neg">-1.27%</td></tr>
         <tr><td>4/21</td><td class="pos">+1,666</td><td class="pos">+1.67%</td><td class="neg">-792</td><td class="neg">-0.79%</td></tr>
         <tr><td>4/20</td><td class="pos">+78</td><td class="pos">+0.08%</td><td class="neg">-8,593</td><td class="neg">-8.59%</td></tr>
@@ -553,7 +948,7 @@ body::before {
     </table>
   </div>
   <div class="card-footer">
-    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-2,916¢ (-2.92%)</span></div>
+    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-980¢ (-0.98%)</span></div>
     <div class="account-box" onclick="copyAccount('21942686')">
       <div><div class="account-label">觀摩帳號</div><div class="account-number">21942686</div></div>
       <span class="copy-hint">點擊複製</span>
@@ -566,7 +961,7 @@ body::before {
 <div class="strategy-card">
   <div class="card-topbar" style="background:linear-gradient(90deg,#00695C,#26A69A);"></div>
     <button class="info-btn" onclick="openPopup('matrix',event)" title="策略說明">？</button>
-  <div class="hero-area" style="background:linear-gradient(160deg,#001a12,#002a1e,#001a12);"><div class="hero-ray"></div><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
+  <div class="hero-area" style="background:linear-gradient(160deg,#001a12,#002a1e,#001a12);"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
       <rect width="300" height="115" fill="#001208"/>
       <!-- Matrix rain -->
       <text x="12" y="20" font-size="9" fill="#00FF88" opacity=".6" font-family="monospace">01</text>
@@ -582,7 +977,7 @@ body::before {
       <!-- Chest display -->
       <rect x="115" y="68" width="30" height="18" rx="4" fill="#004D40"/>
       <text x="130" y="78" text-anchor="middle" font-size="7" font-weight="900" fill="#00FF88" font-family="monospace">MATRIX</text>
-      <text x="130" y="87" text-anchor="middle" font-size="8" font-weight="900" fill="#FFD700">+3.95%</text>
+      <text x="130" y="87" text-anchor="middle" font-size="8" font-weight="900" fill="#FFD700">+4.70%</text>
       <!-- Head -->
       <rect x="112" y="34" width="36" height="30" rx="7" fill="#00695C"/>
       <rect x="114" y="36" width="32" height="26" rx="6" fill="#00897B"/>
@@ -616,8 +1011,8 @@ body::before {
   <div class="stats-section">
     <div class="stat-row-3">
       <div class="stat-box"><div class="stat-label" title="歷史最大浮虧">最大回撤</div><div class="stat-value v-red">-456¢</div></div>
-      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+3.95%</div></div>
-      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~9.9%</div></div>
+      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+4.70%</div></div>
+      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~11.8%</div></div>
     </div>
   </div>
   <div class="table-section">
@@ -628,19 +1023,21 @@ body::before {
     </div>
     <table class="perf-table"><thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
       <tbody id="r2">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+122</td><td class="pos">+1.22%</td><td class="neg">-278</td><td class="neg">-2.78%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+75</td><td class="pos">+0.75%</td><td class="neg">-96</td><td class="neg">-0.96%</td></tr>
+        <tr><td>4/23</td><td class="pos">+122</td><td class="pos">+1.22%</td><td class="neg">-278</td><td class="neg">-2.78%</td></tr>
         <tr><td>4/22</td><td class="pos">+55</td><td class="pos">+0.55%</td><td class="neg">-420</td><td class="neg">-4.20%</td></tr>
         <tr><td>4/21</td><td class="pos">+110</td><td class="pos">+1.10%</td><td class="neg">-456</td><td class="neg">-4.56%</td></tr>
       </tbody>
       <tbody id="a2" style="display:none">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+122</td><td class="pos">+1.22%</td><td class="neg">-278</td><td class="neg">-2.78%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+75</td><td class="pos">+0.75%</td><td class="neg">-96</td><td class="neg">-0.96%</td></tr>
+        <tr ><td>4/23</td><td class="pos">+122</td><td class="pos">+1.22%</td><td class="neg">-278</td><td class="neg">-2.78%</td></tr>
         <tr><td>4/22</td><td class="pos">+55</td><td class="pos">+0.55%</td><td class="neg">-420</td><td class="neg">-4.20%</td></tr>
         <tr><td>4/21</td><td class="pos">+110</td><td class="pos">+1.10%</td><td class="neg">-456</td><td class="neg">-4.56%</td></tr>
       </tbody>
     </table>
   </div>
   <div class="card-footer">
-    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-278¢ (-2.78%)</span></div>
+    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-96¢ (-0.96%)</span></div>
     <div class="account-box" onclick="copyAccount('26921559')">
       <div><div class="account-label">觀摩帳號</div><div class="account-number">26921559</div></div>
       <span class="copy-hint">點擊複製</span>
@@ -653,7 +1050,7 @@ body::before {
 <div class="strategy-card">
   <div class="card-topbar" style="background:linear-gradient(90deg,#6A1B9A,#CE93D8);"></div>
     <button class="info-btn" onclick="openPopup('phantom',event)" title="策略說明">？</button>
-  <div class="hero-area" style="background:linear-gradient(160deg,#1a0a2e,#2d1b4e,#1a0a3e);"><div class="hero-ray"></div><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
+  <div class="hero-area" style="background:linear-gradient(160deg,#1a0a2e,#2d1b4e,#1a0a3e);"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
       <rect width="300" height="115" fill="#120820"/>
       <path d="M0,30 Q75,10 150,30 Q225,50 300,30" stroke="#9C27B0" stroke-width="3" fill="none" opacity=".4"/>
       <path d="M0,45 Q75,25 150,45 Q225,65 300,45" stroke="#E040FB" stroke-width="2" fill="none" opacity=".3"/>
@@ -684,8 +1081,8 @@ body::before {
   <div class="stats-section">
     <div class="stat-row-3">
       <div class="stat-box"><div class="stat-label" title="歷史最大浮虧">最大回撤</div><div class="stat-value v-red">-4,932¢</div></div>
-      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+10.02%</div></div>
-      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~28.6%</div></div>
+      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+10.39%</div></div>
+      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~29.6%</div></div>
     </div>
   </div>
   <div class="table-section">
@@ -696,14 +1093,15 @@ body::before {
     </div>
     <table class="perf-table"><thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
       <tbody id="r3">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+441</td><td class="pos">+0.88%</td><td class="neg">-1,560</td><td class="neg">-3.12%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+186</td><td class="pos">+0.37%</td><td class="neg">-629</td><td class="neg">-1.26%</td></tr>
+        <tr><td>4/23</td><td class="pos">+441</td><td class="pos">+0.88%</td><td class="neg">-1,560</td><td class="neg">-3.12%</td></tr>
         <tr><td>4/22</td><td class="pos">+251</td><td class="pos">+0.50%</td><td class="neg">-4,932</td><td class="neg">-9.86%</td></tr>
         <tr><td>4/21</td><td class="pos">+503</td><td class="pos">+1.01%</td><td class="neg">-858</td><td class="neg">-1.72%</td></tr>
         <tr><td>4/20</td><td class="pos">+538</td><td class="pos">+1.08%</td><td class="neg">-1,339</td><td class="neg">-2.68%</td></tr>
-        <tr><td>4/17</td><td class="neg">-604</td><td class="neg">-1.21%</td><td class="neg">-4,050</td><td class="neg">-8.10%</td></tr>
       </tbody>
       <tbody id="a3" style="display:none">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+441</td><td class="pos">+0.88%</td><td class="neg">-1,560</td><td class="neg">-3.12%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+186</td><td class="pos">+0.37%</td><td class="neg">-629</td><td class="neg">-1.26%</td></tr>
+        <tr ><td>4/23</td><td class="pos">+441</td><td class="pos">+0.88%</td><td class="neg">-1,560</td><td class="neg">-3.12%</td></tr>
         <tr><td>4/22</td><td class="pos">+251</td><td class="pos">+0.50%</td><td class="neg">-4,932</td><td class="neg">-9.86%</td></tr>
         <tr><td>4/21</td><td class="pos">+503</td><td class="pos">+1.01%</td><td class="neg">-858</td><td class="neg">-1.72%</td></tr>
         <tr><td>4/20</td><td class="pos">+538</td><td class="pos">+1.08%</td><td class="neg">-1,339</td><td class="neg">-2.68%</td></tr>
@@ -718,7 +1116,7 @@ body::before {
     </table>
   </div>
   <div class="card-footer">
-    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-1,560¢ (-3.12%)</span></div>
+    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-629¢ (-1.26%)</span></div>
     <div class="account-box" onclick="copyAccount('21942052')">
       <div><div class="account-label">觀摩帳號</div><div class="account-number">21942052</div></div>
       <span class="copy-hint">點擊複製</span>
@@ -731,7 +1129,7 @@ body::before {
 <div class="strategy-card">
   <div class="card-topbar" style="background:linear-gradient(90deg,#B8860B,#FFD700);"></div>
     <button class="info-btn" onclick="openPopup('golden',event)" title="策略說明">？</button>
-  <div class="hero-area" style="background:linear-gradient(160deg,#1a1200,#2a1e00,#1a1200);"><div class="hero-ray"></div><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
+  <div class="hero-area" style="background:linear-gradient(160deg,#1a1200,#2a1e00,#1a1200);"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
       <rect width="300" height="115" fill="#110d00"/>
       <line x1="0" y1="20" x2="80" y2="20" stroke="#FFD700" stroke-width=".8" opacity=".2"/>
       <line x1="80" y1="20" x2="80" y2="50" stroke="#FFD700" stroke-width=".8" opacity=".2"/>
@@ -771,8 +1169,8 @@ body::before {
   <div class="stats-section">
     <div class="stat-row-3">
       <div class="stat-box"><div class="stat-label" title="歷史最大浮虧">最大回撤</div><div class="stat-value v-red">-11,208¢</div></div>
-      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+18.63%</div></div>
-      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~37.6%</div></div>
+      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+19.04%</div></div>
+      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~38.4%</div></div>
     </div>
   </div>
   <div class="table-section">
@@ -783,14 +1181,15 @@ body::before {
     </div>
     <table class="perf-table"><thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
       <tbody id="r4">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+735</td><td class="pos">+0.74%</td><td class="neg">-1,138</td><td class="neg">-1.14%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+406</td><td class="pos">+0.41%</td><td class="neg">-239</td><td class="neg">-0.24%</td></tr>
+        <tr><td>4/23</td><td class="pos">+735</td><td class="pos">+0.74%</td><td class="neg">-1,138</td><td class="neg">-1.14%</td></tr>
         <tr><td>4/22</td><td class="pos">+495</td><td class="pos">+0.50%</td><td class="neg">-4,443</td><td class="neg">-4.44%</td></tr>
         <tr><td>4/21</td><td class="pos">+676</td><td class="pos">+0.68%</td><td class="neg">-1,396</td><td class="neg">-1.40%</td></tr>
         <tr><td>4/20</td><td class="pos">+1,350</td><td class="pos">+1.35%</td><td class="neg">-7,613</td><td class="neg">-7.61%</td></tr>
-        <tr><td>4/17</td><td class="pos">+516</td><td class="pos">+0.52%</td><td class="neg">-7,777</td><td class="neg">-7.78%</td></tr>
       </tbody>
       <tbody id="a4" style="display:none">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+735</td><td class="pos">+0.74%</td><td class="neg">-1,138</td><td class="neg">-1.14%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+406</td><td class="pos">+0.41%</td><td class="neg">-239</td><td class="neg">-0.24%</td></tr>
+        <tr ><td>4/23</td><td class="pos">+735</td><td class="pos">+0.74%</td><td class="neg">-1,138</td><td class="neg">-1.14%</td></tr>
         <tr><td>4/22</td><td class="pos">+495</td><td class="pos">+0.50%</td><td class="neg">-4,443</td><td class="neg">-4.44%</td></tr>
         <tr><td>4/21</td><td class="pos">+676</td><td class="pos">+0.68%</td><td class="neg">-1,396</td><td class="neg">-1.40%</td></tr>
         <tr><td>4/20</td><td class="pos">+1,350</td><td class="pos">+1.35%</td><td class="neg">-7,613</td><td class="neg">-7.61%</td></tr>
@@ -809,7 +1208,7 @@ body::before {
     </table>
   </div>
   <div class="card-footer">
-    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-1,138¢ (-1.14%)</span></div>
+    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-239¢ (-0.24%)</span></div>
     <div class="account-box" onclick="copyAccount('21942004')">
       <div><div class="account-label">觀摩帳號</div><div class="account-number">21942004</div></div>
       <span class="copy-hint">點擊複製</span>
@@ -822,7 +1221,7 @@ body::before {
 <div class="strategy-card">
   <div class="card-topbar" style="background:linear-gradient(90deg,#455A64,#90A4AE);"></div>
     <button class="info-btn" onclick="openPopup('brick',event)" title="策略說明">？</button>
-  <div class="hero-area" style="background:linear-gradient(160deg,#0d1117,#1a2332,#0d1a2e);"><div class="hero-ray"></div><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
+  <div class="hero-area" style="background:linear-gradient(160deg,#0d1117,#1a2332,#0d1a2e);"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
       <rect width="300" height="115" fill="#0a0f18"/>
       <text x="40" y="24" font-size="16" fill="#00BCD4" opacity=".5" font-weight="900">ᚱ</text>
       <text x="230" y="20" font-size="12" fill="#00BCD4" opacity=".4" font-weight="900">ᚠ</text>
@@ -859,8 +1258,8 @@ body::before {
   <div class="stats-section">
     <div class="stat-row-3">
       <div class="stat-box"><div class="stat-label" title="歷史最大浮虧">最大回撤</div><div class="stat-value v-red">-17,375¢</div></div>
-      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+16.74%</div></div>
-      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~36.2%</div></div>
+      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+17.32%</div></div>
+      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~37.4%</div></div>
     </div>
   </div>
   <div class="table-section">
@@ -871,14 +1270,15 @@ body::before {
     </div>
     <table class="perf-table"><thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
       <tbody id="r5">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+854</td><td class="pos">+0.85%</td><td class="neg">-1,072</td><td class="neg">-1.07%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+582</td><td class="pos">+0.58%</td><td class="neg">-377</td><td class="neg">-0.38%</td></tr>
+        <tr><td>4/23</td><td class="pos">+854</td><td class="pos">+0.85%</td><td class="neg">-1,072</td><td class="neg">-1.07%</td></tr>
         <tr><td>4/22</td><td class="pos">+467</td><td class="pos">+0.47%</td><td class="neg">-4,189</td><td class="neg">-4.19%</td></tr>
         <tr><td>4/21</td><td class="pos">+747</td><td class="pos">+0.75%</td><td class="neg">-842</td><td class="neg">-0.84%</td></tr>
         <tr><td>4/20</td><td class="pos">+696</td><td class="pos">+0.70%</td><td class="neg">-1,138</td><td class="neg">-1.14%</td></tr>
-        <tr><td>4/17</td><td class="pos">+583</td><td class="pos">+0.58%</td><td class="neg">-4,122</td><td class="neg">-4.12%</td></tr>
       </tbody>
       <tbody id="a5" style="display:none">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+854</td><td class="pos">+0.85%</td><td class="neg">-1,072</td><td class="neg">-1.07%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+582</td><td class="pos">+0.58%</td><td class="neg">-377</td><td class="neg">-0.38%</td></tr>
+        <tr ><td>4/23</td><td class="pos">+854</td><td class="pos">+0.85%</td><td class="neg">-1,072</td><td class="neg">-1.07%</td></tr>
         <tr><td>4/22</td><td class="pos">+467</td><td class="pos">+0.47%</td><td class="neg">-4,189</td><td class="neg">-4.19%</td></tr>
         <tr><td>4/21</td><td class="pos">+747</td><td class="pos">+0.75%</td><td class="neg">-842</td><td class="neg">-0.84%</td></tr>
         <tr><td>4/20</td><td class="pos">+696</td><td class="pos">+0.70%</td><td class="neg">-1,138</td><td class="neg">-1.14%</td></tr>
@@ -899,7 +1299,7 @@ body::before {
     </table>
   </div>
   <div class="card-footer">
-    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-1,072¢ (-1.07%)</span></div>
+    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-377¢ (-0.38%)</span></div>
     <div class="account-box" onclick="copyAccount('21941964')">
       <div><div class="account-label">觀摩帳號</div><div class="account-number">21941964</div></div>
       <span class="copy-hint">點擊複製</span>
@@ -912,7 +1312,7 @@ body::before {
 <div class="strategy-card">
   <div class="card-topbar" style="background:linear-gradient(90deg,#0D47A1,#42A5F5);"></div>
     <button class="info-btn" onclick="openPopup('spider',event)" title="策略說明">？</button>
-  <div class="hero-area" style="background:linear-gradient(160deg,#000814,#001233,#000814);"><div class="hero-ray"></div><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
+  <div class="hero-area" style="background:linear-gradient(160deg,#000814,#001233,#000814);"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
       <rect width="300" height="115" fill="#000510"/>
       <line x1="130" y1="0" x2="50" y2="115" stroke="#1E88E5" stroke-width=".5" opacity=".2"/>
       <line x1="130" y1="0" x2="130" y2="115" stroke="#1E88E5" stroke-width=".5" opacity=".2"/>
@@ -953,8 +1353,8 @@ body::before {
   <div class="stats-section">
     <div class="stat-row-3">
       <div class="stat-box"><div class="stat-label" title="歷史最大浮虧">最大回撤</div><div class="stat-value v-red">-25,881¢</div></div>
-      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+21.12%</div></div>
-      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~75.2%</div></div>
+      <div class="stat-box"><div class="stat-label">累計盈利</div><div class="stat-value v-green">+22.03%</div></div>
+      <div class="stat-box"><div class="stat-label">預估月收</div><div class="stat-value v-gold">~77.9%</div></div>
     </div>
   </div>
   <div class="table-section">
@@ -965,14 +1365,15 @@ body::before {
     </div>
     <table class="perf-table"><thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
       <tbody id="r6">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+1,885</td><td class="pos">+1.89%</td><td class="neg">-2,996</td><td class="neg">-3.00%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+912</td><td class="pos">+0.91%</td><td class="neg">-323</td><td class="neg">-0.32%</td></tr>
+        <tr><td>4/23</td><td class="pos">+1,885</td><td class="pos">+1.89%</td><td class="neg">-2,996</td><td class="neg">-3.00%</td></tr>
         <tr><td>4/22</td><td class="neg">-3,094</td><td class="neg">-3.09%</td><td class="neg">-25,881</td><td class="neg">-25.88%</td></tr>
         <tr><td>4/21</td><td class="pos">+1,345</td><td class="pos">+1.34%</td><td class="neg">-4,032</td><td class="neg">-4.03%</td></tr>
         <tr><td>4/20</td><td class="pos">+1,835</td><td class="pos">+1.84%</td><td class="neg">-8,037</td><td class="neg">-8.04%</td></tr>
-        <tr><td>4/17</td><td class="pos">+630</td><td class="pos">+0.63%</td><td class="neg">-5,805</td><td class="neg">-5.80%</td></tr>
       </tbody>
       <tbody id="a6" style="display:none">
-        <tr class="new-row"><td>4/23<span class="new-tag">NEW</span></td><td class="pos">+1,885</td><td class="pos">+1.89%</td><td class="neg">-2,996</td><td class="neg">-3.00%</td></tr>
+        <tr class="new-row"><td>4/24<span class="new-tag">NEW</span></td><td class="pos">+912</td><td class="pos">+0.91%</td><td class="neg">-323</td><td class="neg">-0.32%</td></tr>
+        <tr ><td>4/23</td><td class="pos">+1,885</td><td class="pos">+1.89%</td><td class="neg">-2,996</td><td class="neg">-3.00%</td></tr>
         <tr><td>4/22</td><td class="neg">-3,094</td><td class="neg">-3.09%</td><td class="neg">-25,881</td><td class="neg">-25.88%</td></tr>
         <tr><td>4/21</td><td class="pos">+1,345</td><td class="pos">+1.34%</td><td class="neg">-4,032</td><td class="neg">-4.03%</td></tr>
         <tr><td>4/20</td><td class="pos">+1,835</td><td class="pos">+1.84%</td><td class="neg">-8,037</td><td class="neg">-8.04%</td></tr>
@@ -987,7 +1388,7 @@ body::before {
     </table>
   </div>
   <div class="card-footer">
-    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-2,996¢ (-3.00%)</span></div>
+    <div class="float-box"><span class="float-label">最新浮虧</span><span class="float-value">-323¢ (-0.32%)</span></div>
     <div class="account-box" onclick="copyAccount('26787527')">
       <div><div class="account-label">觀摩帳號</div><div class="account-number">26787527</div></div>
       <span class="copy-hint">點擊複製</span>
@@ -1269,131 +1670,6 @@ function closeRankOutside(e){
 
 </script>
 
-<canvas id="bgCanvas" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.55;"></canvas>
-<script>
-(function(){
-  const canvas = document.getElementById('bgCanvas');
-  const ctx = canvas.getContext('2d');
-  let W, H;
-
-  function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
-  resize();
-  window.addEventListener('resize', resize);
-
-  // Gold particles
-  const particles = Array.from({length:60}, ()=>({
-    x: Math.random()*window.innerWidth,
-    y: Math.random()*window.innerHeight,
-    r: Math.random()*2.5+0.5,
-    vx: (Math.random()-.5)*.4,
-    vy: -Math.random()*.6-.2,
-    alpha: Math.random(),
-    color: Math.random()>.5 ? '#D4A017' : '#C8960A',
-  }));
-
-  // Lightning state
-  let lightnings = [];
-  let nextLightning = Date.now() + 1500 + Math.random()*2000;
-
-  function randomLightning(){
-    const x = Math.random()*W*0.6 + W*0.2;
-    const segs = [];
-    let cx = x, cy = 0;
-    while(cy < H*0.7){
-      const nx = cx + (Math.random()-.5)*80;
-      const ny = cy + Math.random()*60+20;
-      segs.push({x1:cx,y1:cy,x2:nx,y2:ny});
-      cx=nx; cy=ny;
-      if(Math.random()<0.3){
-        // branch
-        const bx = cx+(Math.random()-.5)*60;
-        const by = cy+Math.random()*40+10;
-        segs.push({x1:cx,y1:cy,x2:bx,y2:by,branch:true});
-      }
-    }
-    return {segs, alpha:1, life:18, maxLife:18, gold: Math.random()>.6};
-  }
-
-  function drawLightning(l){
-    l.segs.forEach(s=>{
-      const a = (l.alpha * (s.branch?.5:1));
-      // Glow
-      ctx.save();
-      ctx.globalAlpha = a*0.18;
-      ctx.strokeStyle = l.gold ? '#FFD700' : '#88BBFF';
-      ctx.lineWidth = s.branch?4:8;
-      ctx.shadowBlur = 30;
-      ctx.shadowColor = l.gold ? '#FFD700' : '#4488FF';
-      ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); ctx.stroke();
-      ctx.restore();
-      // Core
-      ctx.save();
-      ctx.globalAlpha = a*(s.branch?.4:.9);
-      ctx.strokeStyle = l.gold ? '#FFF5AA' : '#DDEEFF';
-      ctx.lineWidth = s.branch?1:2;
-      ctx.shadowBlur = 12;
-      ctx.shadowColor = l.gold ? '#FFD700' : '#88AAFF';
-      ctx.beginPath(); ctx.moveTo(s.x1,s.y1); ctx.lineTo(s.x2,s.y2); ctx.stroke();
-      ctx.restore();
-    });
-  }
-
-  function frame(){
-    ctx.clearRect(0,0,W,H);
-
-    // Gold particles
-    particles.forEach(p=>{
-      p.x+=p.vx; p.y+=p.vy;
-      p.alpha += (Math.random()-.5)*.04;
-      p.alpha = Math.max(.05, Math.min(.8,p.alpha));
-      if(p.y<-10){ p.y=H+5; p.x=Math.random()*W; }
-      ctx.save();
-      ctx.globalAlpha = p.alpha*.5;
-      ctx.fillStyle = p.color;
-      ctx.shadowBlur = 8; ctx.shadowColor = p.color;
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      ctx.fill();
-      ctx.restore();
-    });
-
-    // Gold shimmer streaks
-    if(Math.random()<.03){
-      const sx=Math.random()*W, sy=Math.random()*H;
-      ctx.save();
-      ctx.globalAlpha=.06;
-      const g=ctx.createLinearGradient(sx,sy,sx+Math.random()*120-60,sy+40);
-      g.addColorStop(0,'transparent'); g.addColorStop(.5,'#D4A017'); g.addColorStop(1,'transparent');
-      ctx.strokeStyle=g; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(sx+(Math.random()-0.5)*100,sy+40); ctx.stroke();
-      ctx.restore();
-    }
-
-    // Lightning
-    const now = Date.now();
-    if(now > nextLightning){
-      lightnings.push(randomLightning());
-      // screen flash
-      ctx.save();
-      ctx.globalAlpha = 0.06;
-      ctx.fillStyle = lightnings[lightnings.length-1].gold ? '#FFD700' : '#AACCFF';
-      ctx.fillRect(0,0,W,H);
-      ctx.restore();
-      nextLightning = now + 1800 + Math.random()*3000;
-    }
-
-    lightnings = lightnings.filter(l=>l.life>0);
-    lightnings.forEach(l=>{
-      l.alpha = l.life/l.maxLife;
-      drawLightning(l);
-      l.life--;
-    });
-
-    requestAnimationFrame(frame);
-  }
-  frame();
-})();
-</script>
 
 </body>
 </html>
