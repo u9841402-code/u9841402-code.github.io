@@ -3,1031 +3,700 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>復仇者戰隊 · EA 策略績效報表</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<title>復仇者戰隊 EA 績效報告</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bangers&family=Noto+Sans+TC:wght@400;700;900&display=swap');
+
 *{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --gold:#C8960A;--gold2:#F0C040;--gold-bg:rgba(200,150,10,.08);
-  --page:#0E0A02;--card:#181006;--card2:#1E1508;
-  --border:rgba(200,150,10,.18);--border2:rgba(200,150,10,.35);
-  --text:#EDE0C4;--muted:#9A8060;--dim:#5A4830;
-  --green:#27AE60;--green-bg:rgba(39,174,96,.12);
-  --red:#E74C3C;--red-bg:rgba(231,76,60,.22);
-  --red-deep:rgba(180,30,20,.35);
-  --cyan:#3AAFE0;--cyan-bg:rgba(58,175,224,.10);
-  --blue:#1A237E;
-  --shadow:0 8px 32px rgba(0,0,0,.55);
-  --shadow2:0 16px 48px rgba(0,0,0,.7);
-  --r:14px;--r2:10px;--r3:7px;
+
+body{
+  background:#0A0A0A;
+  font-family:'Noto Sans TC',sans-serif;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:20px;
 }
-body{background:var(--page);color:var(--text);font-family:'Noto Sans TC',sans-serif;font-weight:500;min-height:100vh;overflow-x:hidden}
 
-/* ── BG CANVAS ── */
-#bgCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.5}
+.poster{
+  width:900px;
+  background:#0D0D0D;
+  position:relative;
+  overflow:hidden;
+}
 
-/* ── LAYOUT ── */
-.wrap{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:40px 20px 80px}
+/* ── HALFTONE BG ── */
+.poster::before{
+  content:'';
+  position:absolute;inset:0;
+  background-image:radial-gradient(circle, rgba(255,220,0,0.06) 1px, transparent 1px);
+  background-size:20px 20px;
+  pointer-events:none;z-index:0;
+}
 
 /* ── HEADER ── */
-.hdr{text-align:center;padding:48px 20px 40px;margin-bottom:40px;border-bottom:1px solid var(--border2);position:relative}
-.hdr::before{content:'';position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);width:200px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.avenger-row{display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:20px}
-.av-shield{width:48px;height:48px;flex-shrink:0}
-.av-text{}
-.av-top{font-size:11.5px;letter-spacing:4px;color:var(--muted);font-weight:700;text-transform:uppercase}
-.av-main{font-size:19.5px;font-weight:900;color:var(--gold);letter-spacing:3px}
-.av-sub{font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:1px;margin-top:1px}
-.brand-pill{display:inline-block;background:var(--gold);color:#080500;font-size:11.5px;font-weight:900;letter-spacing:4px;padding:5px 18px;border-radius:2px;text-transform:uppercase;margin-bottom:14px}
-.hdr-title{font-family:'Noto Serif TC',serif;font-size:44px;font-weight:900;color:var(--text);letter-spacing:2px;line-height:1.15;margin-bottom:8px}
-.hdr-title span{color:var(--gold)}
-.hdr-sub{font-size:16px;color:var(--muted);letter-spacing:2px;margin-bottom:20px}
-.pill-row{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
-.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border2);border-radius:30px;padding:6px 16px;font-size:14px;font-weight:700;color:var(--gold)}
-.pill-b{border-color:rgba(58,175,224,.4);color:var(--cyan)}
+.header{
+  position:relative;z-index:1;
+  background:#E8000E;
+  padding:0;
+  overflow:hidden;
+  border-bottom:6px solid #FFD700;
+}
 
-/* ── ACTION BTNS ── */
-.action-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:22px}
-.act-btn{padding:11px 28px;border:none;border-radius:30px;font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:1px;transition:transform .2s,box-shadow .2s}
-.act-btn:hover{transform:translateY(-3px)}
-.act-risk{background:linear-gradient(135deg,#6A1B9A,#AB47BC);color:#fff;box-shadow:0 4px 18px rgba(106,27,154,.4)}
-.act-cap{background:linear-gradient(135deg,#B8860B,#F0C040);color:#080500;box-shadow:0 4px 18px rgba(184,134,11,.4)}
+.header::before{
+  content:'';
+  position:absolute;
+  top:-30px;right:-30px;
+  width:300px;height:300px;
+  background:rgba(0,0,0,0.2);
+  border-radius:50%;
+}
 
-/* ── 5-CARD GRID ── */
-.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;margin-bottom:44px}
-.grid .card:nth-child(1){grid-column:1/span 2}
-.grid .card:nth-child(2){grid-column:3/span 2}
-.grid .card:nth-child(3){grid-column:5/span 2}
-.grid .card:nth-child(4){grid-column:2/span 2}
-.grid .card:nth-child(5){grid-column:4/span 2}
-@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}.grid .card{grid-column:auto!important}}
-@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.header-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:20px 32px;
+  position:relative;z-index:1;
+}
 
-/* ── CARD ── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;position:relative;transition:border-color .25s,transform .25s,box-shadow .25s;box-shadow:var(--shadow)}
-.card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:var(--shadow2)}
-.card-stripe{height:4px}
-.card-stripe-gold{background:linear-gradient(90deg,#B8860B,#F0C040)}
-.card-stripe-blue{background:linear-gradient(90deg,#0D47A1,#42A5F5)}
-.card-stripe-slate{background:linear-gradient(90deg,#455A64,#90A4AE)}
-.card-stripe-green{background:linear-gradient(90deg,#1B5E20,#69F0AE)}
-.card-stripe-ocean{background:linear-gradient(90deg,#0277BD,#4FC3F7)}
+.brand-block{}
+.brand-tag{
+  font-family:'Bebas Neue',cursive;
+  font-size:13px;
+  letter-spacing:6px;
+  color:rgba(255,255,255,0.7);
+  margin-bottom:4px;
+}
+.brand-title{
+  font-family:'Bangers',cursive;
+  font-size:52px;
+  color:#FFD700;
+  letter-spacing:3px;
+  line-height:1;
+  text-shadow:4px 4px 0 rgba(0,0,0,0.4);
+}
+.brand-sub{
+  font-family:'Bebas Neue',cursive;
+  font-size:16px;
+  letter-spacing:4px;
+  color:white;
+  margin-top:2px;
+}
 
-/* Info button */
-.info-btn{position:absolute;top:10px;right:10px;z-index:20;width:34px;height:34px;border-radius:50%;background:var(--blue);color:var(--gold);font-size:16px;font-weight:900;border:1.5px solid var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(0,0,0,.5);transition:transform .2s}
-.info-btn:hover{transform:scale(1.15)}
+/* A Shield */
+.shield-big{
+  width:80px;height:80px;
+  flex-shrink:0;
+}
 
-/* Hero area */
-.hero{height:110px;overflow:hidden;position:relative}
-.hero svg{width:100%;height:100%;display:block}
-.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(0,0,0,.5),transparent 70%)}
+.date-ribbon{
+  background:#FFD700;
+  text-align:center;
+  padding:8px 32px;
+  font-family:'Bebas Neue',cursive;
+  font-size:16px;
+  letter-spacing:5px;
+  color:#0A0A0A;
+  border-top:2px solid rgba(0,0,0,0.2);
+  position:relative;z-index:1;
+}
 
-/* Card header */
-.card-hdr{padding:14px 16px 12px;border-bottom:1px solid var(--border)}
-.card-name{font-family:'Noto Serif TC',serif;font-size:21px;font-weight:900;color:var(--text);letter-spacing:.5px;margin-bottom:3px}
-.card-tag{font-size:11.5px;color:var(--muted);font-weight:500;line-height:1.5}
-.badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.b{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
-.b-low{background:var(--green-bg);color:var(--green);border:1px solid rgba(39,174,96,.3)}
-.b-mid{background:rgba(255,180,0,.1);color:#D4A017;border:1px solid rgba(212,160,23,.3)}
-.b-high{background:rgba(231,76,60,.1);color:#E74C3C;border:1px solid rgba(231,76,60,.3)}
-.b-cap{background:var(--cyan-bg);color:var(--cyan);border:1px solid rgba(58,175,224,.25)}
-.b-new{background:rgba(58,175,224,.15);color:var(--cyan);border:1px solid rgba(58,175,224,.4)}
+.rebrand-banner{
+  background:linear-gradient(135deg,#1a1a1a,#2a2a2a);
+  border-top:2px solid #FFD700;
+  border-bottom:2px solid #FFD700;
+  padding:10px 32px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  position:relative;z-index:1;
+}
+.rebrand-icon{font-size:20px;}
+.rebrand-text{
+  font-size:13px;
+  color:#FFD700;
+  font-weight:700;
+  letter-spacing:1px;
+  line-height:1.5;
+}
+.rebrand-text span{color:rgba(255,255,255,0.6);font-weight:400;}
 
-/* Stats */
-.stats{padding:14px 14px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.stat{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r3);padding:10px 6px;text-align:center}
-.stat-lbl{font-size:10.5px;color:var(--dim);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
-.stat-val{font-size:17px;font-weight:900;line-height:1}
-.v-g{color:var(--green)}.v-r{color:var(--red)}.v-gold{color:var(--gold)}.v-c{color:var(--cyan)}
+/* ── CARDS CONTAINER ── */
+.cards{
+  position:relative;z-index:1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0;
+}
 
-/* Table section */
-.tbl-wrap{padding:0 14px 0;flex:1}
-.tbl-hdr{font-size:10.5px;font-weight:700;color:var(--dim);letter-spacing:2px;text-transform:uppercase;padding:12px 0 8px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;margin-top:14px}
-.tbl-hdr::after{content:'';flex:1;height:1px;background:var(--border)}
-.tog{display:flex;gap:5px;margin-bottom:8px}
-.tog-btn{flex:1;padding:6px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11.5px;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .2s}
-.tog-btn.active{background:var(--gold);color:#080500;border-color:var(--gold)}
-table.pt{width:100%;border-collapse:collapse;font-size:11px}
-table.pt th{font-size:10.5px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase;padding:5px 3px;text-align:center;border-bottom:1px solid var(--border)}
-table.pt td{padding:6px 3px;text-align:center;font-weight:700;font-size:12.5px;border-bottom:1px solid rgba(200,150,10,.07);color:var(--text)}
-table.pt tr:last-child td{border-bottom:none}
-table.pt tr.nr{background:rgba(58,175,224,.08)}
-table.pt tr.nr td:first-child{color:var(--cyan);font-weight:900}
-table.pt tr.ld{background:var(--red-deep)!important;border-left:3px solid var(--red)}
-table.pt tr.ld td:first-child{color:#FF8080!important;font-weight:900}
-table.pt tr.nr.ld{background:rgba(192,57,43,.35)!important}
-.new-tag{display:inline-block;background:var(--cyan);color:#050a10;font-size:9px;font-weight:900;padding:1px 4px;border-radius:3px;margin-left:2px;vertical-align:middle}
-.opt-tag{display:inline-block;background:var(--gold);color:#080500;font-size:9px;font-weight:900;padding:1px 4px;border-radius:3px;margin-left:2px;vertical-align:middle}
-.pos{color:var(--green)}.neg{color:var(--red)}
+/* ── STRATEGY CARD ── */
+.card{
+  position:relative;
+  overflow:hidden;
+  border:2px solid transparent;
+  transition:.3s;
+}
 
-/* Card footer */
-.card-ftr{padding:12px 14px 14px;border-top:1px solid var(--border);margin-top:auto;display:flex;flex-direction:column;gap:7px}
-.float-box{background:rgba(192,57,43,.15);border:1px solid rgba(192,57,43,.35);border-radius:var(--r3);padding:8px 12px;display:flex;justify-content:space-between;align-items:center}
-.float-lbl{font-size:11.5px;font-weight:700;color:var(--red);letter-spacing:1px}
-.float-val{font-size:15px;font-weight:900;color:var(--red)}
-.float-box-new{background:rgba(58,175,224,.08);border:1px solid rgba(58,175,224,.25)}
-.float-lbl-new{color:var(--cyan)}.float-val-new{color:var(--cyan)}
-.acc-box{background:var(--gold-bg);border:1px solid var(--border2);border-radius:var(--r3);padding:8px 12px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;transition:background .2s}
-.acc-box:hover{background:rgba(200,150,10,.16)}
-.acc-lbl{font-size:11.5px;font-weight:700;color:var(--gold);letter-spacing:1px}
-.acc-num{font-size:15px;font-weight:900;color:var(--text);letter-spacing:2px}
-.acc-hint{font-size:10.5px;color:var(--muted)}
-.plat{font-size:11.5px;color:var(--dim);font-weight:600;text-align:center;letter-spacing:1px}
+/* Comic panel border effect */
+.card::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border:3px solid rgba(255,255,255,0.04);
+  pointer-events:none;
+}
 
-/* Opt note */
-.opt-note{margin-top:8px;padding:8px 12px;background:rgba(200,150,10,.07);border:1px solid rgba(200,150,10,.2);border-radius:var(--r3);font-size:12.5px;color:var(--gold);font-weight:700;line-height:1.6}
-.opt-note span{color:var(--muted);font-weight:600}
+/* Card accent lines (comic panel style) */
+.card-accent{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:5px;
+}
 
-/* Pending */
-.pending-box{text-align:center;padding:24px 10px;color:var(--dim);font-size:15px;font-weight:700}
+/* Hero banner area */
+.hero-banner{
+  height:140px;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:flex-end;
+  padding:16px 20px;
+}
 
-/* ── POPUP ── */
-.pop-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
-.pop-ov.on{display:flex}
-.pop-box{background:var(--card);border:1px solid var(--border2);border-radius:18px;max-width:660px;width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 24px 80px rgba(0,0,0,.7);position:relative;animation:popIn .3s cubic-bezier(.34,1.56,.64,1)}
-@keyframes popIn{from{transform:scale(.88);opacity:0}to{transform:scale(1);opacity:1}}
-.pop-close{position:sticky;top:12px;float:right;margin:12px 12px 0 0;width:36px;height:36px;border-radius:50%;background:var(--gold);color:#080500;border:none;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:900;z-index:10}
-.pop-hero{height:130px;display:flex;align-items:center;justify-content:center;border-radius:17px 17px 0 0;overflow:hidden}
-.pop-body{padding:20px 24px 28px}
-.pop-name{font-family:'Noto Serif TC',serif;font-size:27.5px;font-weight:900;color:var(--text);margin-bottom:3px}
-.pop-sub{font-size:14px;color:var(--muted);letter-spacing:1px;margin-bottom:16px}
-.pop-sec{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;margin-bottom:12px}
-.pop-sec-ttl{font-size:12px;font-weight:900;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.pop-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.feat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-.feat{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:7px;padding:9px 11px}
-.feat-lbl{font-size:10.5px;font-weight:700;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px}
-.feat-val{font-size:14px;font-weight:900;color:var(--text)}
-.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.pros{background:var(--green-bg);border:1px solid rgba(39,174,96,.25);border-radius:8px;padding:10px 12px}
-.cons{background:rgba(231,76,60,.08);border:1px solid rgba(231,76,60,.2);border-radius:8px;padding:10px 12px}
-.pros-ttl{font-size:9px;font-weight:900;color:var(--green);letter-spacing:1px;margin-bottom:6px}
-.cons-ttl{font-size:9px;font-weight:900;color:var(--red);letter-spacing:1px;margin-bottom:6px}
-.pros li,.cons li{font-size:12.5px;font-weight:600;color:var(--text);margin-left:14px;margin-bottom:3px}
-.av-excl{background:linear-gradient(135deg,#1A237E,#283593);border-radius:10px;padding:12px 16px;margin-top:12px;display:flex;align-items:center;gap:12px}
-.av-excl-txt{}
-.av-excl-ttl{font-size:12.5px;font-weight:900;color:rgba(255,255,255,.8);letter-spacing:2px;margin-bottom:2px}
-.av-excl-val{font-size:15px;font-weight:700;color:var(--gold)}
+.hero-bg{
+  position:absolute;inset:0;
+}
 
-/* ── RANK MODAL ── */
-.rank-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
-.rank-ov.on{display:flex}
-@media(min-height:600px){.rank-ov{align-items:center}}
-.rank-box{background:var(--card);border:1px solid var(--border2);border-radius:18px;max-width:500px;width:100%;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 24px 80px rgba(0,0,0,.7);animation:popIn .3s cubic-bezier(.34,1.56,.64,1)}
-.rank-hdr{padding:22px 22px 14px;border-bottom:1px solid var(--border);background:linear-gradient(135deg,rgba(200,150,10,.1),rgba(26,35,126,.1))}
-.rank-ttl{font-family:'Noto Serif TC',serif;font-size:23px;font-weight:900;color:var(--gold);margin-bottom:3px}
-.rank-sub{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:1px}
-.rank-list{padding:14px 18px 22px;display:flex;flex-direction:column;gap:9px}
-.rank-item{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:11px;padding:11px 14px;transition:border-color .2s}
-.rank-item:hover{border-color:var(--border2)}
-.rank-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;flex-shrink:0}
-.rn1{background:linear-gradient(135deg,#FFD700,#FFA000);color:#1a1000}
-.rn2{background:linear-gradient(135deg,#B0BEC5,#78909C);color:#fff}
-.rn3{background:linear-gradient(135deg,#A0522D,#8B4513);color:#fff}
-.rno{background:rgba(255,255,255,.08);color:var(--muted)}
-.rank-info{flex:1}
-.rank-name{font-size:16px;font-weight:900;color:var(--text);margin-bottom:2px}
-.rank-desc{font-size:11.5px;color:var(--muted);font-weight:600}
-.rank-bar-bg{background:rgba(255,255,255,.06);border-radius:5px;height:7px;overflow:hidden;width:90px}
-.rank-bar-fill{height:100%;border-radius:5px;transition:width 1s cubic-bezier(.34,1.56,.64,1)}
-.rank-val{font-size:14px;font-weight:900;text-align:right;min-width:75px}
-@media(max-width:480px){.rank-item{padding:9px 11px;gap:9px}.rank-bar-bg{width:60px}.rank-val{min-width:55px;font-size:11px}}
+/* Comic speed lines */
+.speed-lines{
+  position:absolute;inset:0;
+  background:conic-gradient(from 0deg at 80% 50%,
+    transparent 0deg,
+    rgba(255,255,255,0.03) 2deg,
+    transparent 4deg,
+    rgba(255,255,255,0.02) 6deg,
+    transparent 8deg,
+    rgba(255,255,255,0.03) 10deg,
+    transparent 12deg
+  );
+}
 
-/* ── DISCLAIMER ── */
-.disc{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:var(--r);padding:22px 28px;text-align:center;font-size:13px;color:var(--muted);font-weight:500;line-height:2}
-.disc-ttl{font-size:14px;font-weight:900;color:var(--gold);letter-spacing:3px;margin-bottom:8px}
-.footer-brand{text-align:center;margin-top:28px;font-size:13px;font-weight:900;letter-spacing:7px;color:rgba(200,150,10,.4)}
+.hero-icon{
+  font-size:56px;
+  position:absolute;
+  right:20px;top:50%;
+  transform:translateY(-50%);
+  filter:drop-shadow(0 0 20px currentColor);
+  opacity:0.85;
+  line-height:1;
+}
 
-/* TOAST */
-.toast{display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--card2);color:var(--text);border:1px solid var(--border2);padding:10px 24px;border-radius:30px;font-size:13px;font-weight:700;z-index:9999;box-shadow:var(--shadow2)}
+.hero-text-block{position:relative;z-index:2;}
+
+.strategy-label{
+  font-family:'Bebas Neue',cursive;
+  font-size:11px;
+  letter-spacing:4px;
+  color:rgba(255,255,255,0.6);
+  margin-bottom:4px;
+}
+
+.strategy-name{
+  font-family:'Bangers',cursive;
+  font-size:36px;
+  color:#fff;
+  letter-spacing:2px;
+  line-height:1;
+  text-shadow:3px 3px 0 rgba(0,0,0,0.5);
+}
+
+.strategy-sub{
+  font-size:10px;
+  color:rgba(255,255,255,0.65);
+  font-weight:600;
+  margin-top:3px;
+  letter-spacing:.5px;
+}
+
+/* Card body */
+.card-body{
+  padding:16px 20px;
+  background:#111;
+  border-top:2px solid;
+}
+
+/* Stats row */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.stat{
+  background:#1A1A1A;
+  border-radius:4px;
+  padding:10px 8px;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+
+.stat::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;height:2px;
+}
+
+.stat-label{
+  font-family:'Bebas Neue',cursive;
+  font-size:9px;
+  letter-spacing:2px;
+  color:rgba(255,255,255,0.4);
+  margin-bottom:5px;
+}
+
+.stat-value{
+  font-family:'Bebas Neue',cursive;
+  font-size:22px;
+  line-height:1;
+  letter-spacing:1px;
+}
+
+.stat-unit{
+  font-size:9px;
+  color:rgba(255,255,255,0.4);
+  font-weight:600;
+  margin-top:2px;
+}
+
+/* Table */
+.table-label{
+  font-family:'Bebas Neue',cursive;
+  font-size:11px;
+  letter-spacing:3px;
+  color:rgba(255,255,255,0.4);
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.table-label::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.1);}
+
+.perf-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:11px;
+}
+
+.perf-table th{
+  font-family:'Bebas Neue',cursive;
+  font-size:9px;
+  letter-spacing:2px;
+  color:rgba(255,255,255,0.4);
+  padding:4px 4px 6px;
+  text-align:center;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+.perf-table td{
+  padding:5px 4px;
+  text-align:center;
+  font-weight:700;
+  font-size:11px;
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  color:rgba(255,255,255,0.85);
+}
+
+.perf-table tr.new td:first-child{
+  font-family:'Bebas Neue',cursive;
+  letter-spacing:1px;
+}
+
+.new-badge{
+  display:inline-block;
+  background:#FFD700;
+  color:#000;
+  font-size:7px;
+  font-weight:900;
+  padding:1px 4px;
+  border-radius:2px;
+  margin-left:3px;
+  vertical-align:middle;
+  font-family:'Noto Sans TC',sans-serif;
+}
+
+.loss-row{background:rgba(220,30,30,0.12);}
+.loss-row td:first-child{color:#FF6B6B!important;}
+
+.pos{color:#2ECC71;}
+.neg{color:#E74C3C;}
+
+/* Footer bar */
+.card-footer{
+  padding:10px 20px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#0D0D0D;
+}
+
+.acc-block{}
+.acc-label{
+  font-size:9px;
+  color:rgba(255,255,255,0.35);
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:2px;
+}
+.acc-num{
+  font-family:'Bebas Neue',cursive;
+  font-size:16px;
+  letter-spacing:3px;
+}
+
+.float-block{text-align:right;}
+.float-label{
+  font-size:9px;
+  color:rgba(255,255,255,0.35);
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:2px;
+}
+.float-val{
+  font-family:'Bebas Neue',cursive;
+  font-size:16px;
+  letter-spacing:1px;
+  color:#E74C3C;
+}
+
+/* ── SPECIFIC CARD THEMES ── */
+
+/* 蜘蛛人 - Blue/Red */
+.card-spider .card-accent{background:linear-gradient(90deg,#E8000E,#1A56C8);}
+.card-spider .hero-bg{background:linear-gradient(135deg,#0A0A2E,#1A1A4E,#0A0020);}
+.card-spider .card-body{border-top-color:#1A56C8;}
+.card-spider .stat::before{background:#1A56C8;}
+.card-spider .stat-value.main{color:#42A5F5;}
+.card-spider .acc-num{color:#42A5F5;}
+.card-spider .table-label{color:#42A5F5;}
+
+/* 蟻人 - Green */
+.card-antman .card-accent{background:linear-gradient(90deg,#1B5E20,#4CAF50,#69F0AE);}
+.card-antman .hero-bg{background:linear-gradient(135deg,#061008,#0A1E08,#061008);}
+.card-antman .card-body{border-top-color:#2E7D32;}
+.card-antman .stat::before{background:#2E7D32;}
+.card-antman .stat-value.main{color:#69F0AE;}
+.card-antman .acc-num{color:#69F0AE;}
+.card-antman .table-label{color:#69F0AE;}
+
+/* 方舟 - Ocean Blue */
+.card-ark .card-accent{background:linear-gradient(90deg,#01579B,#4FC3F7,#B3E5FC);}
+.card-ark .hero-bg{background:linear-gradient(135deg,#020D1A,#041828,#01081A);}
+.card-ark .card-body{border-top-color:#0277BD;}
+.card-ark .stat::before{background:#0277BD;}
+.card-ark .stat-value.main{color:#4FC3F7;}
+.card-ark .acc-num{color:#4FC3F7;}
+.card-ark .table-label{color:#4FC3F7;}
+
+/* 小磚 - Slate/Teal */
+.card-brick .card-accent{background:linear-gradient(90deg,#37474F,#78909C,#B0BEC5);}
+.card-brick .hero-bg{background:linear-gradient(135deg,#0A0F14,#0F1A20,#0A0F14);}
+.card-brick .card-body{border-top-color:#455A64;}
+.card-brick .stat::before{background:#455A64;}
+.card-brick .stat-value.main{color:#90A4AE;}
+.card-brick .acc-num{color:#90A4AE;}
+.card-brick .table-label{color:#90A4AE;}
+
+/* ── DIVIDER (between rows) ── */
+.row-divider{
+  grid-column:1/-1;
+  height:3px;
+  background:linear-gradient(90deg,transparent,#FFD700,#E8000E,#FFD700,transparent);
+  opacity:0.6;
+  position:relative;z-index:1;
+}
+
+/* ── BOTTOM FOOTER ── */
+.poster-footer{
+  position:relative;z-index:1;
+  background:#E8000E;
+  border-top:5px solid #FFD700;
+  padding:14px 32px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.footer-left{
+  font-family:'Bebas Neue',cursive;
+  font-size:11px;
+  letter-spacing:3px;
+  color:rgba(255,255,255,0.7);
+  line-height:1.6;
+}
+
+.footer-disc{
+  font-size:9px;
+  color:rgba(255,255,255,0.5);
+  font-weight:600;
+  text-align:right;
+  max-width:380px;
+  line-height:1.5;
+}
+
+/* Card border separation */
+.card:nth-child(odd){border-right:2px solid rgba(255,215,0,0.15);}
+.cards>.card{border-bottom:2px solid rgba(255,215,0,0.15);}
+
+
+/* 黃蜂 - Gold/Yellow */
+.card-wasp .card-accent{background:linear-gradient(90deg,#F57F17,#FFD700,#FFF176);}
+.card-wasp .hero-bg{background:linear-gradient(135deg,#1A1200,#2A1E00,#1A1200);}
+.card-wasp .card-body{border-top-color:#F9A825;}
+.card-wasp .stat::before{background:#F9A825;}
+.card-wasp .acc-num{color:#FFD700;}
+
+
+
+
+
+/* 2-card layout */
+.cards { grid-template-columns: 1fr 1fr; }
+.cards > .card { border-bottom: none; }
+.cards > .card:nth-child(1) { border-right: 2px solid rgba(255,215,0,0.2); }
+
 </style>
 </head>
 <body>
+<div class="poster">
 
-<canvas id="bgCanvas"></canvas>
-
-<!-- POPUP -->
-<div class="pop-ov" id="popOv" onclick="closePop(event)">
-  <div class="pop-box">
-    <button class="pop-close" onclick="closePop2()">✕</button>
-    <div id="popInner"></div>
-  </div>
-</div>
-
-<!-- RANK MODAL -->
-<div class="rank-ov" id="rankOv" onclick="closeRankOuter(event)">
-  <div class="rank-box">
-    <button class="pop-close" onclick="closeRank()" style="margin:10px 10px 0 0">✕</button>
-    <div id="rankInner"></div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<div class="wrap">
-
-<!-- HEADER -->
-<div class="hdr">
-  <div class="avenger-row">
-    <svg class="av-shield" viewBox="0 0 52 52">
-      <circle cx="26" cy="26" r="24" fill="#1A237E" stroke="#D4A017" stroke-width="2.5"/>
-      <circle cx="26" cy="26" r="18" fill="none" stroke="rgba(212,160,23,.3)" stroke-width="1"/>
-      <text x="26" y="34" text-anchor="middle" font-size="24" font-weight="900" fill="#D4A017" font-family="Arial,sans-serif">A</text>
-    </svg>
-    <div class="av-text">
-      <div class="av-top">復仇者戰隊專屬</div>
-      <div class="av-main">AVENGERS SQUAD</div>
-      <div class="av-sub">黃金隊長 ｜ AI Gold Trade</div>
-    </div>
-    <svg class="av-shield" viewBox="0 0 52 52">
-      <circle cx="26" cy="26" r="24" fill="#1A237E" stroke="#D4A017" stroke-width="2.5"/>
-      <circle cx="26" cy="26" r="18" fill="none" stroke="rgba(212,160,23,.3)" stroke-width="1"/>
-      <text x="26" y="34" text-anchor="middle" font-size="24" font-weight="900" fill="#D4A017" font-family="Arial,sans-serif">A</text>
-    </svg>
-  </div>
-  <div><span class="brand-pill">AI Gold Trade</span></div>
-  <div class="hdr-title">EA 策略<span>績效報表</span></div>
-  <div class="hdr-sub">3/30 ～ 5/22 完整績效統計</div>
-  <div class="pill-row">
-    <span class="pill">📅 更新至 2026.05.22</span>
-    <span class="pill pill-b">💲 美分帳戶（¢）</span>
-  </div>
-  <div class="action-row">
-    <button class="act-btn act-risk" onclick="openRank('risk')">⚡ 風險排行</button>
-    <button class="act-btn act-cap" onclick="openRank('capital')">💰 本金需求排行</button>
-  </div>
-</div>
-
-<!-- CARDS -->
-<div class="grid">
-<div class="card">
-  <div class="card-stripe card-stripe-gold"></div>
-  <button class="info-btn" onclick="openPopup('thunder',event)">?</button>
-  <div class="hero"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
-      <defs><filter id="glow1"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
-      <rect width="300" height="115" fill="#0a0a2e"/>
-      <circle cx="20" cy="15" r="1.2" fill="white" opacity=".7"/><circle cx="60" cy="8" r="1" fill="white" opacity=".5"/><circle cx="100" cy="20" r="1.5" fill="white" opacity=".6"/><circle cx="200" cy="10" r="1" fill="white" opacity=".4"/><circle cx="250" cy="25" r="1.2" fill="white" opacity=".6"/><circle cx="280" cy="12" r="1" fill="white" opacity=".5"/>
-      <polygon points="240,5 228,52 238,52 224,112 256,48 243,48 258,5" fill="#FFE066" opacity=".9"/>
-      <polygon points="260,15 252,46 258,46 250,82 268,40 261,40 270,15" fill="#FFD700" opacity=".6"/>
-      <ellipse cx="130" cy="98" rx="28" ry="11" fill="#8B6914" opacity=".5"/>
-      <rect x="112" y="55" width="36" height="46" rx="8" fill="#C8960A"/>
-      <path d="M112,60 Q90,75 88,108 Q108,98 112,78 Z" fill="#C0392B" opacity=".9"/>
-      <path d="M148,60 Q170,75 172,108 Q152,98 148,78 Z" fill="#C0392B" opacity=".9"/>
-      <ellipse cx="130" cy="46" rx="16" ry="18" fill="#E8C49A"/>
-      <path d="M114,42 Q105,38 102,48 Q108,50 114,50 Z" fill="#C8960A"/>
-      <path d="M146,42 Q155,38 158,48 Q152,50 146,50 Z" fill="#C8960A"/>
-      <path d="M114,38 Q130,28 146,38 Q140,35 130,33 Q120,35 114,38 Z" fill="#C8960A"/>
-      <ellipse cx="124" cy="45" rx="3" ry="3.5" fill="#6B4226" opacity=".8"/>
-      <ellipse cx="136" cy="45" rx="3" ry="3.5" fill="#6B4226" opacity=".8"/>
-      <ellipse cx="130" cy="54" rx="8" ry="5" fill="#8B6914" opacity=".7"/>
-      <rect x="152" y="46" width="8" height="34" rx="3" fill="#8B7355"/>
-      <rect x="148" y="40" width="16" height="14" rx="4" fill="#9E9E9E"/>
-      <rect x="149" y="41" width="14" height="12" rx="3" fill="#BDBDBD"/>
-      <polyline points="160,40 170,28 165,28 175,13" stroke="#FFE066" stroke-width="2.5" fill="none" opacity=".9"/>
-      <circle cx="130" cy="70" r="6" fill="#FFD700" opacity=".8"/>
-      <text x="130" y="74" text-anchor="middle" font-size="8" font-weight="900" fill="#1a1a2e">⚡</text>
-    </svg></div>
-  <div class="card-hdr">
-    <div class="card-name">⚡ 雷神 EA</div>
-    <div class="card-tag">不是暴利，是極速與精準</div>
-    <div class="badges">
-      <span class="b b-mid">風險：中低</span>
-      <span class="b b-cap">100,000 ¢</span>
-      
-    </div>
-  </div>
-  <div class="stats">
-    <div class="stat"><div class="stat-lbl">最大回撤</div><div class="stat-val v-r">-34,136¢</div></div>
-    <div class="stat"><div class="stat-lbl">累計盈利</div><div class="stat-val v-g">+53.18%</div></div>
-    <div class="stat"><div class="stat-lbl">預估月收</div><div class="stat-val v-gold">~33.4%</div></div>
-  </div>
-  <div class="tbl-wrap">
-    <div class="tbl-hdr">近期戰績</div>
-    <div class="tog">
-      <button class="tog-btn active" onclick="switchData(this,'r1','a1')">最新</button>
-      <button class="tog-btn" onclick="switchData(this,'a1','r1')">全部</button>
-    </div>
-    <table class="pt">
-      <thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
-      <tbody id="r1">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+555</td><td class="pos">+0.56%</td><td class="neg">-5,985</td><td class="neg">-5.99%</td></tr>
-        <tr><td>5/21</td><td class="pos">+1,191</td><td class="pos">+1.19%</td><td class="neg">-312</td><td class="neg">-0.31%</td></tr>
-        <tr><td>5/15</td><td class="pos">+1,732</td><td class="pos">+1.73%</td><td class="neg">-1,425</td><td class="neg">-1.43%</td></tr>
-        <tr><td>5/14</td><td class="pos">+48</td><td class="pos">+0.05%</td><td class="neg">-2,393</td><td class="neg">-2.39%</td></tr>
-        <tr><td>5/13</td><td class="pos">+1,855</td><td class="pos">+1.86%</td><td class="neg">-3,358</td><td class="neg">-3.36%</td></tr>
-      </tbody>
-      <tbody id="a1" style="display:none">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+555</td><td class="pos">+0.56%</td><td class="neg">-5,985</td><td class="neg">-5.99%</td></tr>
-        <tr><td>5/21</td><td class="pos">+1,191</td><td class="pos">+1.19%</td><td class="neg">-312</td><td class="neg">-0.31%</td></tr>
-        <tr><td>5/15</td><td class="pos">+1,732</td><td class="pos">+1.73%</td><td class="neg">-1,425</td><td class="neg">-1.43%</td></tr>
-        <tr><td>5/14</td><td class="pos">+48</td><td class="pos">+0.05%</td><td class="neg">-2,393</td><td class="neg">-2.39%</td></tr>
-        <tr><td>5/13</td><td class="pos">+1,855</td><td class="pos">+1.86%</td><td class="neg">-3,358</td><td class="neg">-3.36%</td></tr>
-        <tr><td>5/12</td><td class="pos">+1,693</td><td class="pos">+1.69%</td><td class="neg">-844</td><td class="neg">-0.84%</td></tr>
-        <tr><td>5/11</td><td class="pos">+933</td><td class="pos">+0.93%</td><td class="neg">-1,041</td><td class="neg">-1.04%</td></tr>
-        <tr><td>5/8</td><td class="pos">+931</td><td class="pos">+0.93%</td><td class="neg">-1,846</td><td class="neg">-1.85%</td></tr>
-        <tr class="ld"><td>5/7</td><td class="neg">-5,173</td><td class="neg">-5.17%</td><td class="neg">-26,997</td><td class="neg">-27.00%</td></tr>
-        <tr class="ld"><td>5/6</td><td class="neg">-7,100</td><td class="neg">-7.10%</td><td class="neg">-34,136</td><td class="neg">-34.14%</td></tr>
-        <tr><td>5/5</td><td class="pos">+3,842</td><td class="pos">+3.84%</td><td class="neg">-1,912</td><td class="neg">-1.91%</td></tr>
-        <tr><td>5/4</td><td class="pos">+2,889</td><td class="pos">+2.89%</td><td class="neg">-2,230</td><td class="neg">-2.23%</td></tr>
-        <tr><td>5/1</td><td class="pos">+2,602</td><td class="pos">+2.60%</td><td class="neg">-1,276</td><td class="neg">-1.28%</td></tr>
-        <tr><td>4/30</td><td class="pos">+2,042</td><td class="pos">+2.04%</td><td class="neg">-4,403</td><td class="neg">-4.40%</td></tr>
-        <tr><td>4/29</td><td class="pos">+2,854</td><td class="pos">+2.85%</td><td class="neg">-2,469</td><td class="neg">-2.47%</td></tr>
-        <tr><td>4/28</td><td class="pos">+2,035</td><td class="pos">+2.04%</td><td class="neg">-2,278</td><td class="neg">-2.28%</td></tr>
-        <tr class="ld"><td>4/27</td><td class="neg">-2,454</td><td class="neg">-2.45%</td><td class="neg">-2,330</td><td class="neg">-2.33%</td></tr>
-        <tr><td>4/24</td><td class="pos">+1,182</td><td class="pos">+1.18%</td><td class="neg">-980</td><td class="neg">-0.98%</td></tr>
-        <tr><td>4/23</td><td class="pos">+1,702</td><td class="pos">+1.70%</td><td class="neg">-2,916</td><td class="neg">-2.92%</td></tr>
-        <tr><td>4/22</td><td class="pos">+809</td><td class="pos">+0.81%</td><td class="neg">-1,265</td><td class="neg">-1.27%</td></tr>
-        <tr><td>4/21</td><td class="pos">+1,666</td><td class="pos">+1.67%</td><td class="neg">-792</td><td class="neg">-0.79%</td></tr>
-        <tr><td>4/20</td><td class="pos">+78</td><td class="pos">+0.08%</td><td class="neg">-8,593</td><td class="neg">-8.59%</td></tr>
-        <tr><td>4/17</td><td class="pos">+980</td><td class="pos">+0.98%</td><td class="neg">-3,134</td><td class="neg">-3.13%</td></tr>
-        <tr><td>4/16</td><td class="pos">+2,351</td><td class="pos">+2.35%</td><td class="neg">-3,490</td><td class="neg">-3.49%</td></tr>
-        <tr><td>4/15</td><td class="pos">+2,735</td><td class="pos">+2.74%</td><td class="neg">-5,948</td><td class="neg">-5.95%</td></tr>
-        <tr><td>4/14</td><td class="pos">+4,206</td><td class="pos">+4.21%</td><td class="neg">-8,565</td><td class="neg">-8.57%</td></tr>
-        <tr><td>4/13</td><td class="pos">+739</td><td class="pos">+0.74%</td><td class="neg">-17,421</td><td class="neg">-17.42%</td></tr>
-        <tr><td>4/09</td><td class="pos">+3,328</td><td class="pos">+3.33%</td><td class="neg">-732</td><td class="neg">-0.73%</td></tr>
-        <tr><td>4/08</td><td class="pos">+7,417</td><td class="pos">+7.42%</td><td class="neg">-5,996</td><td class="neg">-6.00%</td></tr>
-        <tr><td>4/07</td><td class="pos">+3,785</td><td class="pos">+3.79%</td><td class="neg">-5,864</td><td class="neg">-5.86%</td></tr>
-        <tr class="ld"><td>4/06</td><td class="neg">-5,781</td><td class="neg">-5.78%</td><td class="neg">-12,924</td><td class="neg">-12.92%</td></tr>
-        <tr><td>4/02</td><td class="pos">+3,651</td><td class="pos">+3.65%</td><td class="neg">-4,504</td><td class="neg">-4.50%</td></tr>
-        <tr><td>4/01</td><td class="pos">+6,376</td><td class="pos">+6.38%</td><td class="neg">-5,638</td><td class="neg">-5.64%</td></tr>
-        <tr><td>3/31</td><td class="pos">+3,029</td><td class="pos">+3.03%</td><td class="neg">-8,454</td><td class="neg">-8.45%</td></tr>
-        <tr><td>3/30</td><td class="pos">+4,452</td><td class="pos">+4.45%</td><td class="neg">-3,874</td><td class="neg">-3.87%</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="card-ftr">
-    <div class="float-box"><span class="float-lbl">最新浮虧</span><span class="float-val">-5,985¢ (-5.99%)</span></div>
-    <div class="acc-box" onclick="copyAcc('21942686')">
-      <div><div class="acc-lbl">觀摩帳號</div><div class="acc-num">21942686</div></div>
-      <span class="acc-hint">點擊複製</span>
-    </div>
-    <div class="plat">MT4｜可跟單 0.5 倍｜美分帳戶</div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-stripe card-stripe-blue"></div>
-  <button class="info-btn" onclick="openPopup('spider',event)">?</button>
-  <div class="hero"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
-      <rect width="300" height="115" fill="#000510"/>
-      <line x1="130" y1="0" x2="50" y2="115" stroke="#1E88E5" stroke-width=".5" opacity=".2"/>
-      <line x1="130" y1="0" x2="130" y2="115" stroke="#1E88E5" stroke-width=".5" opacity=".2"/>
-      <line x1="130" y1="0" x2="210" y2="115" stroke="#1E88E5" stroke-width=".5" opacity=".2"/>
-      <line x1="0" y1="40" x2="300" y2="40" stroke="#1E88E5" stroke-width=".5" opacity=".15"/>
-      <path d="M130,0 Q170,40 210,115" stroke="#1E88E5" stroke-width=".8" fill="none" opacity=".25"/>
-      <path d="M130,0 Q90,40 50,115" stroke="#1E88E5" stroke-width=".8" fill="none" opacity=".25"/>
-      <line x1="165" y1="24" x2="260" y2="5" stroke="#64B5F6" stroke-width="1.5" opacity=".8"/>
-      <ellipse cx="140" cy="79" rx="24" ry="29" fill="#1565C0"/>
-      <ellipse cx="140" cy="79" rx="22" ry="27" fill="#1E88E5"/>
-      <ellipse cx="140" cy="74" rx="8" ry="5" fill="#000814"/>
-      <line x1="132" y1="72" x2="122" y2="67" stroke="#000814" stroke-width="1.5"/>
-      <line x1="132" y1="74" x2="120" y2="74" stroke="#000814" stroke-width="1.5"/>
-      <line x1="132" y1="76" x2="122" y2="81" stroke="#000814" stroke-width="1.5"/>
-      <line x1="148" y1="72" x2="158" y2="67" stroke="#000814" stroke-width="1.5"/>
-      <line x1="148" y1="74" x2="160" y2="74" stroke="#000814" stroke-width="1.5"/>
-      <line x1="148" y1="76" x2="158" y2="81" stroke="#000814" stroke-width="1.5"/>
-      <path d="M162,67 Q175,49 165,27" stroke="#1E88E5" stroke-width="10" fill="none" stroke-linecap="round"/>
-      <path d="M162,67 Q175,49 165,27" stroke="#1565C0" stroke-width="8" fill="none" stroke-linecap="round"/>
-      <path d="M118,67 Q100,74 95,89" stroke="#1E88E5" stroke-width="10" fill="none" stroke-linecap="round"/>
-      <path d="M130,107 Q118,114 105,114" stroke="#1E88E5" stroke-width="9" fill="none" stroke-linecap="round"/>
-      <path d="M150,107 Q162,114 175,114" stroke="#1E88E5" stroke-width="9" fill="none" stroke-linecap="round"/>
-      <ellipse cx="140" cy="51" rx="18" ry="19" fill="#1565C0"/>
-      <ellipse cx="140" cy="51" rx="16" ry="17" fill="#1E88E5"/>
-      <ellipse cx="133" cy="48" rx="7" ry="6" fill="white" opacity=".9"/>
-      <ellipse cx="147" cy="48" rx="7" ry="6" fill="white" opacity=".9"/>
-      <ellipse cx="133" cy="48" rx="4" ry="4" fill="#90CAF9"/>
-      <ellipse cx="147" cy="48" rx="4" ry="4" fill="#90CAF9"/>
-      <ellipse cx="133" cy="48" rx="2.5" ry="2.5" fill="#E3F2FD" opacity=".8"/>
-      <ellipse cx="147" cy="48" rx="2.5" ry="2.5" fill="#E3F2FD" opacity=".8"/>
-    </svg></div>
-  <div class="card-hdr">
-    <div class="card-name">🕷️ 蜘蛛人對鎖</div>
-    <div class="card-tag">雙向對鎖・主動控倉・整體風控</div>
-    <div class="badges">
-      <span class="b b-mid">風險：中低</span>
-      <span class="b b-cap">100,000 ¢</span>
-      
-    </div>
-  </div>
-  <div class="stats">
-    <div class="stat"><div class="stat-lbl">最大回撤</div><div class="stat-val v-r">-75,544¢</div></div>
-    <div class="stat"><div class="stat-lbl">累計盈利</div><div class="stat-val v-g">+29.12%</div></div>
-    <div class="stat"><div class="stat-lbl">預估月收</div><div class="stat-val v-gold">~26.8%</div></div>
-  </div>
-  <div class="tbl-wrap">
-    <div class="tbl-hdr">近期戰績</div>
-    <div class="tog">
-      <button class="tog-btn active" onclick="switchData(this,'r6','a6')">最新</button>
-      <button class="tog-btn" onclick="switchData(this,'a6','r6')">全部</button>
-    </div>
-    <table class="pt">
-      <thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
-      <tbody id="r6">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+2,592</td><td class="pos">+2.59%</td><td class="neg">-11,054</td><td class="neg">-11.05%</td></tr>
-        <tr><td>5/21</td><td class="pos">+1,712</td><td class="pos">+1.71%</td><td class="neg">-3,492</td><td class="neg">-3.49%</td></tr>
-        <tr><td>5/15</td><td class="pos">+2,147</td><td class="pos">+2.15%</td><td class="neg">-841</td><td class="neg">-0.84%</td></tr>
-        <tr class="ld"><td>5/14</td><td class="neg">-253</td><td class="neg">-0.25%</td><td class="neg">-1,413</td><td class="neg">-1.41%</td></tr>
-        <tr><td>5/13</td><td class="pos">+966</td><td class="pos">+0.97%</td><td class="neg">-20,741</td><td class="neg">-20.74%</td></tr>
-      </tbody>
-      <tbody id="a6" style="display:none">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+2,592</td><td class="pos">+2.59%</td><td class="neg">-11,054</td><td class="neg">-11.05%</td></tr>
-        <tr><td>5/21</td><td class="pos">+1,712</td><td class="pos">+1.71%</td><td class="neg">-3,492</td><td class="neg">-3.49%</td></tr>
-        <tr><td>5/15</td><td class="pos">+2,147</td><td class="pos">+2.15%</td><td class="neg">-841</td><td class="neg">-0.84%</td></tr>
-        <tr class="ld"><td>5/14</td><td class="neg">-253</td><td class="neg">-0.25%</td><td class="neg">-1,413</td><td class="neg">-1.41%</td></tr>
-        <tr><td>5/13</td><td class="pos">+966</td><td class="pos">+0.97%</td><td class="neg">-20,741</td><td class="neg">-20.74%</td></tr>
-        <tr><td>5/12</td><td class="pos">+1,241</td><td class="pos">+1.24%</td><td class="neg">-15,346</td><td class="neg">-15.35%</td></tr>
-        <tr><td>5/11</td><td class="pos">+1,142</td><td class="pos">+1.14%</td><td class="neg">-1,045</td><td class="neg">-1.05%</td></tr>
-        <tr><td>5/8</td><td class="pos">+711</td><td class="pos">+0.71%</td><td class="neg">-16,729</td><td class="neg">-16.73%</td></tr>
-        <tr><td>5/7</td><td class="pos">+830</td><td class="pos">+0.83%</td><td class="neg">-11,969</td><td class="neg">-11.97%</td></tr>
-        <tr class="ld"><td>5/6</td><td class="neg">-5,550</td><td class="neg">-5.55%</td><td class="neg">-75,544</td><td class="neg">-75.54%</td></tr>
-        <tr><td>5/5</td><td class="pos">+210</td><td class="pos">+0.21%</td><td class="neg">-933</td><td class="neg">-0.93%</td></tr>
-        <tr><td>5/4</td><td class="pos">+2,254</td><td class="pos">+2.25%</td><td class="neg">-2,074</td><td class="neg">-2.07%</td></tr>
-        <tr class="ld"><td>5/1</td><td class="neg">-478</td><td class="neg">-0.48%</td><td class="neg">-1,276</td><td class="neg">-1.28%</td></tr>
-        <tr><td>4/29</td><td class="pos">+2,694</td><td class="pos">+2.69%</td><td class="neg">-2,469</td><td class="neg">-2.47%</td></tr>
-        <tr><td>4/28</td><td class="pos">+1,923</td><td class="pos">+1.92%</td><td class="neg">-2,477</td><td class="neg">-2.48%</td></tr>
-        <tr><td>4/27</td><td class="pos">+960</td><td class="pos">+0.96%</td><td class="neg">-1,333</td><td class="neg">-1.33%</td></tr>
-        <tr><td>4/24</td><td class="pos">+316</td><td class="pos">+0.32%</td><td class="neg">-323</td><td class="neg">-0.32%</td></tr>
-        <tr class="ld"><td>4/22</td><td class="neg">-2,714</td><td class="neg">-2.71%</td><td class="neg">-25,881</td><td class="neg">-25.88%</td></tr>
-        <tr><td>4/20</td><td class="pos">+1,771</td><td class="pos">+1.77%</td><td class="neg">-8,037</td><td class="neg">-8.04%</td></tr>
-        <tr><td>4/17</td><td class="pos">+951</td><td class="pos">+0.95%</td><td class="neg">-5,805</td><td class="neg">-5.81%</td></tr>
-        <tr><td>4/16</td><td class="pos">+644</td><td class="pos">+0.64%</td><td class="neg">-1,595</td><td class="neg">-1.60%</td></tr>
-        <tr><td>4/15</td><td class="pos">+896</td><td class="pos">+0.90%</td><td class="neg">-942</td><td class="neg">-0.94%</td></tr>
-        <tr><td>4/14</td><td class="pos">+2,196</td><td class="pos">+2.20%</td><td class="neg">-1,418</td><td class="neg">-1.42%</td></tr>
-        <tr><td>4/11</td><td class="pos">+364</td><td class="pos">+0.36%</td><td class="neg">-1,575</td><td class="neg">-1.58%</td></tr>
-        <tr><td>4/09</td><td class="pos">+1,914</td><td class="pos">+1.91%</td><td class="neg">0</td><td class="neg">0.00%</td></tr>
-        <tr><td>4/08</td><td class="pos">+3,668</td><td class="pos">+3.67%</td><td class="neg">-2,477</td><td class="neg">-2.48%</td></tr>
-        <tr><td>4/07</td><td class="pos">+4,064</td><td class="pos">+4.06%</td><td class="neg">-3,370</td><td class="neg">-3.37%</td></tr>
-        <tr><td>4/06</td><td class="pos">+3,868</td><td class="pos">+3.87%</td><td class="neg">-2,508</td><td class="neg">-2.51%</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="card-ftr">
-    <div class="float-box"><span class="float-lbl">最新浮虧</span><span class="float-val">-11,054¢ (-11.05%)</span></div>
-    <div class="acc-box" onclick="copyAcc('26787527')">
-      <div><div class="acc-lbl">觀摩帳號</div><div class="acc-num">26787527</div></div>
-      <span class="acc-hint">點擊複製</span>
-    </div>
-    <div class="plat">MT4｜可跟單 0.5 倍｜美分帳戶</div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-stripe card-stripe-slate"></div>
-  <button class="info-btn" onclick="openPopup('brick',event)">?</button>
-  <div class="hero"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
-      <rect width="300" height="115" fill="#0a0f18"/>
-      <text x="40" y="24" font-size="16" fill="#00BCD4" opacity=".5" font-weight="900">ᚱ</text>
-      <text x="230" y="20" font-size="12" fill="#00BCD4" opacity=".4" font-weight="900">ᚠ</text>
-      <text x="260" y="44" font-size="14" fill="#00BCD4" opacity=".3" font-weight="900">ᚢ</text>
-      <rect x="104" y="62" width="52" height="48" rx="8" fill="#5D4037"/>
-      <rect x="106" y="64" width="48" height="46" rx="7" fill="#795548"/>
-      <rect x="106" y="64" width="48" height="8" rx="3" fill="#607D8B"/>
-      <rect x="109" y="72" width="42" height="4" rx="2" fill="#78909C"/>
-      <rect x="106" y="93" width="48" height="8" rx="3" fill="#4E342E"/>
-      <rect x="124" y="94" width="12" height="6" rx="2" fill="#FFD700"/>
-      <ellipse cx="130" cy="49" rx="20" ry="18" fill="#E8C49A"/>
-      <path d="M110,47 Q130,27 150,47 Q145,34 130,31 Q115,34 110,47 Z" fill="#607D8B"/>
-      <path d="M113,43 Q105,29 108,19 Q112,29 116,41 Z" fill="#CFD8DC"/>
-      <path d="M147,43 Q155,29 152,19 Q148,29 144,41 Z" fill="#CFD8DC"/>
-      <ellipse cx="122" cy="49" rx="4" ry="4" fill="#3E2723"/>
-      <ellipse cx="138" cy="49" rx="4" ry="4" fill="#3E2723"/>
-      <ellipse cx="122" cy="49" rx="2" ry="2.5" fill="#00BCD4"/>
-      <ellipse cx="138" cy="49" rx="2" ry="2.5" fill="#00BCD4"/>
-      <path d="M112,57 Q115,73 120,82 Q125,88 130,90 Q135,88 140,82 Q145,73 148,57 Q140,63 130,64 Q120,63 112,57 Z" fill="#E8C49A" opacity=".6"/>
-      <rect x="156" y="54" width="7" height="48" rx="3" fill="#8D6E63"/>
-      <rect x="150" y="47" width="19" height="15" rx="5" fill="#607D8B"/>
-      <rect x="151" y="48" width="17" height="13" rx="4" fill="#78909C"/>
-      <text x="159" y="58" font-size="9" fill="#00BCD4" text-anchor="middle" font-weight="900">ᚱ</text>
-      <ellipse cx="159" cy="55" rx="10" ry="7" fill="#00BCD4" opacity=".15"/>
-      <rect x="88" y="62" width="16" height="20" rx="4" fill="#546E7A"/>
-      <rect x="89" y="63" width="14" height="18" rx="3" fill="#607D8B"/>
-      <!-- 優化標記 -->
-      <rect x="8" y="6" width="80" height="18" rx="4" fill="#FFD700" opacity="0.9"/>
-      <text x="48" y="19" text-anchor="middle" font-size="9" font-weight="900" fill="#1a1000">⚙️ 5/8 優化參數</text>
-    </svg></div>
-  <div class="card-hdr">
-    <div class="card-name">🪨 小磚</div>
-    <div class="card-tag">中震盪穩定盈利・微型手數起步 <span class="opt-tag">⚙️ 5/8優化</span></div>
-    <div class="badges">
-      <span class="b b-low">風險：低</span>
-      <span class="b b-cap">100,000 ¢</span>
-      
-    </div>
-  </div>
-  <div class="stats">
-    <div class="stat"><div class="stat-lbl">最大回撤</div><div class="stat-val v-r">-23,246¢</div></div>
-    <div class="stat"><div class="stat-lbl">累計盈利</div><div class="stat-val v-g">+37.72%</div></div>
-    <div class="stat"><div class="stat-lbl">預估月收</div><div class="stat-val v-gold">~24.4%</div></div>
-  </div>
-  <div class="tbl-wrap">
-    <div class="tbl-hdr">近期戰績</div>
-    <div class="tog">
-      <button class="tog-btn active" onclick="switchData(this,'r5','a5')">最新</button>
-      <button class="tog-btn" onclick="switchData(this,'a5','r5')">全部</button>
-    </div>
-    <table class="pt">
-      <thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
-      <tbody id="r5">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+995</td><td class="pos">+1.00%</td><td class="neg">-590</td><td class="neg">-0.59%</td></tr>
-        <tr><td>5/21</td><td class="pos">+990</td><td class="pos">+0.99%</td><td class="neg">-113</td><td class="neg">-0.11%</td></tr>
-        <tr><td>5/15</td><td class="pos">+2,269</td><td class="pos">+2.27%</td><td class="neg">-8,170</td><td class="neg">-8.17%</td></tr>
-        <tr><td>5/14</td><td class="pos">+1,446</td><td class="pos">+1.45%</td><td class="neg">-1,344</td><td class="neg">-1.34%</td></tr>
-        <tr><td>5/13</td><td class="pos">+1,815</td><td class="pos">+1.82%</td><td class="neg">-23,246</td><td class="neg">-23.25%</td></tr>
-      </tbody>
-      <tbody id="a5" style="display:none">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+995</td><td class="pos">+1.00%</td><td class="neg">-590</td><td class="neg">-0.59%</td></tr>
-        <tr><td>5/21</td><td class="pos">+990</td><td class="pos">+0.99%</td><td class="neg">-113</td><td class="neg">-0.11%</td></tr>
-        <tr><td>5/15</td><td class="pos">+2,269</td><td class="pos">+2.27%</td><td class="neg">-8,170</td><td class="neg">-8.17%</td></tr>
-        <tr><td>5/14</td><td class="pos">+1,446</td><td class="pos">+1.45%</td><td class="neg">-1,344</td><td class="neg">-1.34%</td></tr>
-        <tr><td>5/13</td><td class="pos">+1,815</td><td class="pos">+1.82%</td><td class="neg">-23,246</td><td class="neg">-23.25%</td></tr>
-        <tr><td>5/12</td><td class="pos">+2,291</td><td class="pos">+2.29%</td><td class="neg">-13,480</td><td class="neg">-13.48%</td></tr>
-        <tr><td>5/11</td><td class="pos">+894</td><td class="pos">+0.89%</td><td class="neg">-5,143</td><td class="neg">-5.14%</td></tr>
-        <tr><td>5/9</td><td class="pos">+577</td><td class="pos">+0.58%</td><td class="neg">-476</td><td class="neg">-0.48%</td></tr>
-        <tr><td>5/8</td><td class="pos">+1,148</td><td class="pos">+1.15%</td><td class="neg">-2,032</td><td class="neg">-2.03%</td></tr>
-      </tbody>
-    </table>
-    <div class="opt-note">⚙️ <strong>5/8 參數優化</strong><br><span>策略參數已於 5/8 完成調整優化，本日起進入全新優化版本運行。</span></div>
-  </div>
-  <div class="card-ftr">
-    <div class="float-box"><span class="float-lbl">最新浮虧</span><span class="float-val">-11,054¢ (-11.05%)</span></div>
-    <div class="acc-box" onclick="copyAcc('21941964')">
-      <div><div class="acc-lbl">觀摩帳號</div><div class="acc-num">21941964</div></div>
-      <span class="acc-hint">點擊複製</span>
-    </div>
-    <div class="plat">MT4｜可跟單 0.5 倍｜美分帳戶</div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-stripe card-stripe-green"></div>
-  <button class="info-btn" onclick="openPopup('antman',event)">?</button>
-  <div class="hero"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
-      <rect width="300" height="115" fill="#061008"/>
-      <!-- Quantum realm energy waves -->
-      <ellipse cx="150" cy="58" rx="130" ry="50" fill="none" stroke="#00E676" stroke-width="0.8" opacity="0.15"/>
-      <ellipse cx="150" cy="58" rx="100" ry="38" fill="none" stroke="#00E676" stroke-width="0.6" opacity="0.2"/>
-      <ellipse cx="150" cy="58" rx="70" ry="26" fill="none" stroke="#69F0AE" stroke-width="0.5" opacity="0.25"/>
-      <!-- Quantum particles -->
-      <circle cx="30" cy="20" r="2" fill="#00E676" opacity="0.6"/>
-      <circle cx="260" cy="25" r="1.5" fill="#69F0AE" opacity="0.5"/>
-      <circle cx="50" cy="80" r="1.5" fill="#00E676" opacity="0.4"/>
-      <circle cx="240" cy="85" r="2" fill="#69F0AE" opacity="0.5"/>
-      <circle cx="15" cy="55" r="1" fill="#00E676" opacity="0.6"/>
-      <circle cx="285" cy="60" r="1.2" fill="#00E676" opacity="0.4"/>
-      <!-- Size shrink effect - multiple Ant-Man silhouettes -->
-      <!-- Large silhouette (left) -->
-      <g transform="translate(55,15)" opacity="0.75">
-        <!-- Helmet -->
-        <ellipse cx="30" cy="22" rx="18" ry="20" fill="#1B5E20"/>
-        <ellipse cx="30" cy="22" rx="14" ry="16" fill="#2E7D32"/>
-        <!-- Ant antenna -->
-        <line x1="22" y1="8" x2="14" y2="-2" stroke="#1B5E20" stroke-width="2"/>
-        <line x1="38" y1="8" x2="46" y2="-2" stroke="#1B5E20" stroke-width="2"/>
-        <circle cx="14" cy="-2" r="3" fill="#2E7D32"/>
-        <circle cx="46" cy="-2" r="3" fill="#2E7D32"/>
-        <!-- Eye slits -->
-        <path d="M18,20 Q24,16 30,20 Q24,23 18,20 Z" fill="#69F0AE" opacity="0.9"/>
-        <path d="M42,20 Q36,16 30,20 Q36,23 42,20 Z" fill="#69F0AE" opacity="0.9"/>
-        <!-- Body -->
-        <rect x="16" y="40" width="28" height="42" rx="7" fill="#1B5E20"/>
-        <rect x="18" y="42" width="24" height="38" rx="6" fill="#2E7D32"/>
-        <!-- Chest symbol -->
-        <circle cx="30" cy="56" r="6" fill="#00E676" opacity="0.7"/>
-        <text x="30" y="60" text-anchor="middle" font-size="7" font-weight="900" fill="#061008">A</text>
-        <!-- Arms -->
-        <rect x="4" y="40" width="12" height="30" rx="5" fill="#2E7D32"/>
-        <rect x="44" y="40" width="12" height="30" rx="5" fill="#2E7D32"/>
-        <!-- Legs -->
-        <rect x="16" y="80" width="12" height="26" rx="4" fill="#1B5E20"/>
-        <rect x="32" y="80" width="12" height="26" rx="4" fill="#1B5E20"/>
-      </g>
-      <!-- Medium silhouette (center, slightly smaller) -->
-      <g transform="translate(128,28) scale(0.72)" opacity="0.65">
-        <ellipse cx="30" cy="22" rx="18" ry="20" fill="#388E3C"/>
-        <ellipse cx="30" cy="22" rx="14" ry="16" fill="#43A047"/>
-        <line x1="22" y1="8" x2="14" y2="-2" stroke="#388E3C" stroke-width="2"/>
-        <line x1="38" y1="8" x2="46" y2="-2" stroke="#388E3C" stroke-width="2"/>
-        <circle cx="14" cy="-2" r="3" fill="#43A047"/>
-        <circle cx="46" cy="-2" r="3" fill="#43A047"/>
-        <path d="M18,20 Q24,16 30,20 Q24,23 18,20 Z" fill="#69F0AE" opacity="0.9"/>
-        <path d="M42,20 Q36,16 30,20 Q36,23 42,20 Z" fill="#69F0AE" opacity="0.9"/>
-        <rect x="16" y="40" width="28" height="42" rx="7" fill="#388E3C"/>
-        <rect x="18" y="42" width="24" height="38" rx="6" fill="#43A047"/>
-        <circle cx="30" cy="56" r="6" fill="#00E676" opacity="0.7"/>
-        <rect x="4" y="40" width="12" height="30" rx="5" fill="#43A047"/>
-        <rect x="44" y="40" width="12" height="30" rx="5" fill="#43A047"/>
-        <rect x="16" y="80" width="12" height="26" rx="4" fill="#388E3C"/>
-        <rect x="32" y="80" width="12" height="26" rx="4" fill="#388E3C"/>
-      </g>
-      <!-- Small silhouette (right, tiny) -->
-      <g transform="translate(208,42) scale(0.42)" opacity="0.55">
-        <ellipse cx="30" cy="22" rx="18" ry="20" fill="#4CAF50"/>
-        <ellipse cx="30" cy="22" rx="14" ry="16" fill="#66BB6A"/>
-        <line x1="22" y1="8" x2="14" y2="-2" stroke="#4CAF50" stroke-width="2"/>
-        <line x1="38" y1="8" x2="46" y2="-2" stroke="#4CAF50" stroke-width="2"/>
-        <circle cx="14" cy="-2" r="3" fill="#66BB6A"/>
-        <circle cx="46" cy="-2" r="3" fill="#66BB6A"/>
-        <path d="M18,20 Q24,16 30,20 Q24,23 18,20 Z" fill="#B9F6CA" opacity="0.9"/>
-        <path d="M42,20 Q36,16 30,20 Q36,23 42,20 Z" fill="#B9F6CA" opacity="0.9"/>
-        <rect x="16" y="40" width="28" height="42" rx="7" fill="#4CAF50"/>
-        <rect x="18" y="42" width="24" height="38" rx="6" fill="#66BB6A"/>
-        <circle cx="30" cy="56" r="6" fill="#00E676" opacity="0.7"/>
-        <rect x="4" y="40" width="12" height="30" rx="5" fill="#66BB6A"/>
-        <rect x="44" y="40" width="12" height="30" rx="5" fill="#66BB6A"/>
-        <rect x="16" y="80" width="12" height="26" rx="4" fill="#4CAF50"/>
-        <rect x="32" y="80" width="12" height="26" rx="4" fill="#4CAF50"/>
-      </g>
-      <!-- Quantum size arrows -->
-      <path d="M105,70 L115,70 L112,66 M115,70 L112,74" stroke="#00E676" stroke-width="1.5" fill="none" opacity="0.6"/>
-      <path d="M185,70 L175,70 L178,66 M175,70 L178,74" stroke="#00E676" stroke-width="1.5" fill="none" opacity="0.6"/>
-      <!-- Ground glow -->
-      <ellipse cx="150" cy="110" rx="100" ry="8" fill="#00E676" opacity="0.06"/>
-    </svg></div>
-  <div class="card-hdr">
-    <div class="card-name">🐜 蟻人 EA</div>
-    <div class="card-tag">量子震盪・蟻群修剪系統・全時段雙向智能收割</div>
-    <div class="badges">
-      <span class="b b-high">風險：中</span>
-      <span class="b b-cap">100,000 ¢</span>
-      
-    </div>
-  </div>
-  <div class="stats">
-    <div class="stat"><div class="stat-lbl">最大回撤</div><div class="stat-val v-r">-35,556¢</div></div>
-    <div class="stat"><div class="stat-lbl">累計盈利</div><div class="stat-val v-g">+29.50%</div></div>
-    <div class="stat"><div class="stat-lbl">預估月收</div><div class="stat-val v-gold">~92.7%</div></div>
-  </div>
-  <div class="tbl-wrap">
-    <div class="tbl-hdr">近期戰績</div>
-    <div class="tog">
-      <button class="tog-btn active" onclick="switchData(this,'r7','a7')">最新</button>
-      <button class="tog-btn" onclick="switchData(this,'a7','r7')">全部</button>
-    </div>
-    <table class="pt">
-      <thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
-      <tbody id="r7">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+3,616</td><td class="pos">+3.62%</td><td class="neg">-4,494</td><td class="neg">-4.49%</td></tr>
-        <tr><td>5/21</td><td class="pos">+2,098</td><td class="pos">+2.10%</td><td class="neg">-884</td><td class="neg">-0.88%</td></tr>
-        <tr><td>5/15</td><td class="pos">+12,390</td><td class="pos">+12.39%</td><td class="neg">-35,556</td><td class="neg">-35.56%</td></tr>
-        <tr><td>5/14</td><td class="pos">+3,070</td><td class="pos">+3.07%</td><td class="neg">-1,253</td><td class="neg">-1.25%</td></tr>
-        <tr><td>5/13</td><td class="pos">+1,693</td><td class="pos">+1.69%</td><td class="neg">-1,765</td><td class="neg">-1.77%</td></tr>
-      </tbody>
-      <tbody id="a7" style="display:none">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+3,616</td><td class="pos">+3.62%</td><td class="neg">-4,494</td><td class="neg">-4.49%</td></tr>
-        <tr><td>5/21</td><td class="pos">+2,098</td><td class="pos">+2.10%</td><td class="neg">-884</td><td class="neg">-0.88%</td></tr>
-        <tr><td>5/15</td><td class="pos">+12,390</td><td class="pos">+12.39%</td><td class="neg">-35,556</td><td class="neg">-35.56%</td></tr>
-        <tr><td>5/14</td><td class="pos">+3,070</td><td class="pos">+3.07%</td><td class="neg">-1,253</td><td class="neg">-1.25%</td></tr>
-        <tr><td>5/13</td><td class="pos">+1,693</td><td class="pos">+1.69%</td><td class="neg">-1,765</td><td class="neg">-1.77%</td></tr>
-        <tr><td>5/8</td><td class="pos">+5,004</td><td class="pos">+5.00%</td><td class="neg">-5,728</td><td class="neg">-5.73%</td></tr>
-        <tr><td>5/7</td><td class="pos">+1,633</td><td class="pos">+1.63%</td><td class="neg">-8,428</td><td class="neg">-8.43%</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="card-ftr">
-    <div class="float-box"><span class="float-lbl">最新浮虧</span><span class="float-val">-4,494¢ (-4.49%)</span></div>
-    <div class="acc-box" onclick="copyAcc('27259841')">
-      <div><div class="acc-lbl">觀摩帳號</div><div class="acc-num">27259841</div></div>
-      <span class="acc-hint">點擊複製</span>
-    </div>
-    <div class="plat">MT4｜可跟單 0.5 倍｜美分帳戶</div>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-stripe card-stripe-ocean"></div>
-  <button class="info-btn" onclick="openPopup('ark',event)">?</button>
-  <div class="hero"><svg class="hero-svg" viewBox="0 0 300 115" xmlns="http://www.w3.org/2000/svg">
-      <rect width="300" height="115" fill="#010810"/>
-      <!-- Ocean waves -->
-      <path d="M0,85 Q40,72 80,82 Q120,92 160,78 Q200,64 240,76 Q270,85 300,78 L300,115 L0,115 Z" fill="#0277BD" opacity="0.25"/>
-      <path d="M0,90 Q50,78 100,88 Q150,98 200,84 Q250,70 300,82 L300,115 L0,115 Z" fill="#01579B" opacity="0.3"/>
-      <path d="M0,100 Q60,90 120,98 Q180,106 240,94 Q270,88 300,95 L300,115 L0,115 Z" fill="#003c5f" opacity="0.4"/>
-      <!-- Stars in sky -->
-      <circle cx="20" cy="12" r="1.2" fill="white" opacity="0.6"/>
-      <circle cx="55" cy="7" r="1" fill="white" opacity="0.5"/>
-      <circle cx="100" cy="18" r="1.5" fill="white" opacity="0.7"/>
-      <circle cx="200" cy="10" r="1" fill="white" opacity="0.5"/>
-      <circle cx="250" cy="20" r="1.2" fill="white" opacity="0.6"/>
-      <circle cx="280" cy="8" r="1" fill="white" opacity="0.4"/>
-      <circle cx="160" cy="5" r="0.8" fill="white" opacity="0.5"/>
-      <circle cx="130" cy="15" r="1" fill="white" opacity="0.4"/>
-      <!-- Moon reflection on water -->
-      <ellipse cx="150" cy="100" rx="30" ry="4" fill="#4FC3F7" opacity="0.15"/>
-      <!-- Moon -->
-      <circle cx="150" cy="30" r="18" fill="#FFFDE7" opacity="0.85"/>
-      <circle cx="157" cy="25" r="14" fill="#020D1A" opacity="0.75"/>
-      <!-- ARK Ship hull -->
-      <path d="M60,72 Q150,55 240,72 L252,88 Q150,78 48,88 Z" fill="#1565C0"/>
-      <path d="M60,72 Q150,57 240,72 L238,74 Q150,60 62,74 Z" fill="#1976D2"/>
-      <!-- Ship waterline glow -->
-      <path d="M50,88 Q150,80 250,88" stroke="#4FC3F7" stroke-width="1.5" fill="none" opacity="0.5"/>
-      <!-- Ship deck -->
-      <rect x="80" y="52" width="140" height="22" rx="4" fill="#0D47A1"/>
-      <rect x="82" y="54" width="136" height="18" rx="3" fill="#1565C0"/>
-      <!-- Bridge/cabin -->
-      <rect x="118" y="28" width="64" height="26" rx="4" fill="#0D47A1"/>
-      <rect x="120" y="30" width="60" height="22" rx="3" fill="#1565C0"/>
-      <!-- Bridge windows lit up -->
-      <rect x="124" y="34" width="10" height="8" rx="2" fill="#4FC3F7" opacity="0.9"/>
-      <rect x="138" y="34" width="10" height="8" rx="2" fill="#4FC3F7" opacity="0.9"/>
-      <rect x="152" y="34" width="10" height="8" rx="2" fill="#4FC3F7" opacity="0.9"/>
-      <rect x="166" y="34" width="10" height="8" rx="2" fill="#4FC3F7" opacity="0.8"/>
-      <!-- Windows glow -->
-      <rect x="123" y="33" width="12" height="10" rx="2" fill="#4FC3F7" opacity="0.15"/>
-      <rect x="137" y="33" width="12" height="10" rx="2" fill="#4FC3F7" opacity="0.15"/>
-      <rect x="151" y="33" width="12" height="10" rx="2" fill="#4FC3F7" opacity="0.15"/>
-      <!-- Deck details -->
-      <rect x="88" y="57" width="8" height="14" rx="2" fill="#0D47A1"/>
-      <rect x="100" y="57" width="8" height="14" rx="2" fill="#0D47A1"/>
-      <rect x="200" y="57" width="8" height="14" rx="2" fill="#0D47A1"/>
-      <rect x="210" y="57" width="8" height="14" rx="2" fill="#0D47A1"/>
-      <!-- Radar/antenna on top -->
-      <line x1="150" y1="28" x2="150" y2="16" stroke="#4FC3F7" stroke-width="1.5"/>
-      <circle cx="150" cy="16" r="3" fill="#4FC3F7" opacity="0.8"/>
-      <!-- Radar sweep line -->
-      <line x1="150" y1="16" x2="162" y2="10" stroke="#4FC3F7" stroke-width="1" opacity="0.5"/>
-      <!-- Smokestack -->
-      <rect x="130" y="20" width="8" height="12" rx="2" fill="#0A3A7A"/>
-      <rect x="168" y="22" width="7" height="10" rx="2" fill="#0A3A7A"/>
-      <!-- Smoke puffs -->
-      <ellipse cx="134" cy="18" rx="6" ry="4" fill="#4FC3F7" opacity="0.12"/>
-      <ellipse cx="130" cy="14" rx="5" ry="3" fill="#4FC3F7" opacity="0.08"/>
-      <!-- Ship name on hull -->
-      <text x="150" y="82" text-anchor="middle" font-size="9" font-weight="900" fill="#4FC3F7" opacity="0.7" font-family="Arial">ARK</text>
-      <!-- Gentle wake waves -->
-      <path d="M48,90 Q35,94 22,90" stroke="#4FC3F7" stroke-width="1.5" fill="none" opacity="0.4"/>
-      <path d="M252,90 Q265,94 278,90" stroke="#4FC3F7" stroke-width="1.5" fill="none" opacity="0.4"/>
-      <!-- Chart line on sky (trading metaphor) -->
-      <polyline points="20,60 40,55 60,58 80,50 100,52 115,46" stroke="#4FC3F7" stroke-width="1.2" fill="none" opacity="0.3"/>
-      <circle cx="115" cy="46" r="2.5" fill="#4FC3F7" opacity="0.5"/>
-    </svg></div>
-  <div class="card-hdr">
-    <div class="card-name">🚢 方舟 EA</div>
-    <div class="card-tag">穩健遠航・小步累積系統・RSI雙閾值保護</div>
-    <div class="badges">
-      <span class="b b-low">風險：低</span>
-      <span class="b b-cap">1,000 ¢</span>
-      
-    </div>
-  </div>
-  <div class="stats">
-    <div class="stat"><div class="stat-lbl">最大回撤</div><div class="stat-val v-r">-430¢</div></div>
-    <div class="stat"><div class="stat-lbl">累計盈利</div><div class="stat-val v-g">+47.70%</div></div>
-    <div class="stat"><div class="stat-lbl">預估月收</div><div class="stat-val v-gold">~130.9%</div></div>
-  </div>
-  <div class="tbl-wrap">
-    <div class="tbl-hdr">近期戰績</div>
-    <div class="tog">
-      <button class="tog-btn active" onclick="switchData(this,'r8','a8')">最新</button>
-      <button class="tog-btn" onclick="switchData(this,'a8','r8')">全部</button>
-    </div>
-    <table class="pt">
-      <thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
-      <tbody id="r8">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+25</td><td class="pos">+2.47%</td><td class="neg">-5</td><td class="neg">-0.49%</td></tr>
-        <tr><td>5/21</td><td class="pos">+7</td><td class="pos">+0.70%</td><td class="neg">-84</td><td class="neg">-8.40%</td></tr>
-        <tr><td>5/15</td><td class="pos">+187</td><td class="pos">+18.70%</td><td class="neg">-171</td><td class="neg">-17.10%</td></tr>
-        <tr><td>5/14</td><td class="pos">+33</td><td class="pos">+3.30%</td><td class="neg">-14</td><td class="neg">-1.40%</td></tr>
-        <tr><td>5/13</td><td class="pos">+98</td><td class="pos">+9.80%</td><td class="neg">-201</td><td class="neg">-20.10%</td></tr>
-      </tbody>
-      <tbody id="a8" style="display:none">
-        <tr class="nr"><td>5/22<span class="new-tag">NEW</span></td><td class="pos">+25</td><td class="pos">+2.47%</td><td class="neg">-5</td><td class="neg">-0.49%</td></tr>
-        <tr><td>5/21</td><td class="pos">+7</td><td class="pos">+0.70%</td><td class="neg">-84</td><td class="neg">-8.40%</td></tr>
-        <tr><td>5/15</td><td class="pos">+187</td><td class="pos">+18.70%</td><td class="neg">-171</td><td class="neg">-17.10%</td></tr>
-        <tr><td>5/14</td><td class="pos">+33</td><td class="pos">+3.30%</td><td class="neg">-14</td><td class="neg">-1.40%</td></tr>
-        <tr><td>5/13</td><td class="pos">+98</td><td class="pos">+9.80%</td><td class="neg">-201</td><td class="neg">-20.10%</td></tr>
-        <tr><td>5/12</td><td class="pos">+71</td><td class="pos">+7.10%</td><td class="neg">-232</td><td class="neg">-23.20%</td></tr>
-        <tr><td>5/11</td><td class="pos">+52</td><td class="pos">+5.20%</td><td class="neg">-430</td><td class="neg">-43.00%</td></tr>
-        <tr><td>5/8</td><td class="pos">+3</td><td class="pos">+0.30%</td><td class="neg">-9</td><td class="neg">-0.90%</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <div class="card-ftr">
-    <div class="float-box"><span class="float-lbl">最新浮虧</span><span class="float-val">-5¢ (-0.49%)</span></div>
-    <div class="acc-box" onclick="copyAcc('28030492')">
-      <div><div class="acc-lbl">觀摩帳號</div><div class="acc-num">28030492</div></div>
-      <span class="acc-hint">點擊複製</span>
-    </div>
-    <div class="plat">MT4｜可跟單 0.5 倍｜美分帳戶</div>
-  </div>
-</div>
-
-</div>
-
-<div class="disc">
-  <div class="disc-ttl">免責聲明</div>
-  本資料僅供參考，不構成任何投資建議。外匯及差價合約交易涉及重大風險，<br>
-  過往績效不代表未來表現。投資前請充分了解相關風險並確保資金為可承受損失之範圍。<br>
-  本公司不對任何因使用本資料而產生之損失負責。<br>
-  所有金額單位為 <strong style="color:var(--cyan)">美分（¢）</strong>，百分比依各策略建議本金計算。<br>
-  預估月收 = 近期平均日盈利 × 22 交易日估算，不代表保證收益。
-</div>
-<div class="footer-brand">✦ AI GOLD TRADE ✦</div>
-</div>
-
-<script>
-const popups = {
-  thunder: {
-    bg:'linear-gradient(160deg,#1a1a2e,#0f3460)',
-    title:'⚡ 雷神 EA',
-    subtitle:'不是暴利，是極速與精準',
-    core:'1分K線過濾進場，極速捕捉趨勢初期回調，單單帶止損保護，高效複利成長。',
-    features:[
-      {label:'進場邏輯',value:'1分K過濾進場'},
-      {label:'止損保護',value:'單單止損，每單獨立'},
-      {label:'適應行情',value:'中小震盪 / 趨勢初期'},
-      {label:'解單速度',value:'極快，盈利高'},
-    ],
-    pros:['解單快，盈利高','單單設止損保護','高效複利成長'],
-    cons:['指標過濾若失靈較弱','純趨勢市場效果下降'],
-    avengers:{label:'復仇者戰隊專屬參數',params:'建議本金：100,000¢ ｜ MT4平台 ｜ 觀摩：21942686'},
-    capital:'100,000 ¢',risk:'中低',
-  },
-  spider: {
-    bg:'linear-gradient(160deg,#000814,#001233)',
-    title:'??️ 蜘蛛人對鎖',
-    subtitle:'雙向對鎖・主動控倉・整體風控',
-    core:'多空同步運作，行情再快也能雙向佈局。依市場節奏推進部位，整體風控精準，不靠暴力翻倍硬打市場。',
-    features:[
-      {label:'核心策略',value:'雙向對鎖佈局'},
-      {label:'控倉方式',value:'主動節奏控倉推進'},
-      {label:'風控設計',value:'整體倉位管理'},
-      {label:'交易時間',value:'全天候運作'},
-    ],
-    pros:['多空同步不錯過行情','節奏控倉有層次','整體風控穩健'],
-    cons:['偶有單日虧損需心理準備','大波動需注意浮虧'],
-    avengers:{label:'復仇者戰隊專屬參數',params:'建議本金：100,000¢ ｜ MT4平台 ｜ 觀摩：26787527'},
-    capital:'100,000 ¢',risk:'中低',
-  },
-  brick: {
-    bg:'linear-gradient(160deg,#0d1117,#1a2332)',
-    title:'?? 小磚',
-    subtitle:'EA 小型搬磚機 ｜ 中震盪穩定盈利',
-    core:'微型手數起步(0.01)，階梯加倉靈活防禦，打過單邊巨幅下跌400點安然無事。智能逃跑計劃：多單手數>3.0自動啟動。5/8 參數優化升級，策略更穩健。',
-    features:[
-      {label:'起始手數',value:'0.01（微型）'},
-      {label:'加倉方式',value:'階梯加倉防禦'},
-      {label:'逃跑觸發',value:'多單手數 > 3.0'},
-      {label:'最新狀態',value:'⚙️ 5/8 參數優化'},
-    ],
-    pros:['耐震能力強 400點','微型手數控風險','5/8優化更穩健'],
-    cons:['超大單邊需謹慎','優化後數據持續觀察'],
-    avengers:{label:'復仇者戰隊專屬參數',params:'起始：0.01 ｜ 最大：2.0 ｜ 安全逃跑：$3.0 ｜ 5/8已優化'},
-    capital:'100,000 ¢',risk:'低',
-  },
-  antman: {
-    bg:'linear-gradient(160deg,#0a1f0a,#0d3010)',
-    title:'?? 蟻人 EA',
-    subtitle:'量子震盪・蟻群修剪系統・全時段雙向智能收割',
-    core:'24小時全時段運行，雙向同時佈局。震盪盤雙向榨汁、趨勢盤紅燈追擊。進可順勢吃飽，退可拔釘修剪，不戀戰、不無腦凹單。',
-    features:[
-      {label:'進場邏輯',value:'ADX換擋+CCI防假突破+DEMA動能'},
-      {label:'修剪系統',value:'AOE降維救火，6/4層觸發拔釘'},
-      {label:'加倉方式',value:'ATR動態間距，虧越多拉越開'},
-      {label:'止盈模式',value:'紅燈追蹤+整體追蹤智控切換'},
-    ],
-    pros:['全時段自動運行免盯盤','蟻群修剪不凹單','量子雙向引擎捕捉每波動'],
-    cons:['中風險需足夠本金','浮虧期間需耐心持有'],
-    avengers:{label:'復仇者戰隊專屬參數',params:'建議本金：100,000¢ ｜ Cent帳戶一鍵適配 ｜ 觀摩：27259841'},
-    capital:'100,000 ¢',risk:'中',
-  },
-  ark: {
-    bg:'linear-gradient(160deg,#020D1A,#041828)',
-    title:'?? 方舟 EA',
-    subtitle:'穩健遠航・小步累積系統・RSI雙閾值保護',
-    core:'不追求單筆暴利，只追求穩定的小勝累積。24小時自動化遠航，RSI 75/25雙閾值過濾極端區間。低倍率、有層數封頂、有間距保護，真正為長期航行設計。',
-    features:[
-      {label:'止盈目標',value:'每輪盈利30美元自動收割'},
-      {label:'加倉倍率',value:'1.2倍溫和加碼，上限12層'},
-      {label:'過濾機制',value:'RSI 75/25雙閾值過濾極端區'},
-      {label:'帳戶適配',value:'Cent帳戶，0.01起始手數'},
-    ],
-    pros:['低倍率不激進','12層封頂不無限疊加','RSI過濾避開情緒高點'],
-    cons:['全新上線績效待觀察','穩健策略月收益較低'],
-    avengers:{label:'復仇者戰隊專屬參數',params:'建議本金：1,000¢ ｜ 起始：0.01手 ｜ 觀摩：28030492'},
-    capital:'1,000 ¢',risk:'低',
-  },
-};
-
-
-
-function openRank(type){
-const rankData_inner = {
-  risk: {
-    title: '⚡ 策略風險排行',
-    subtitle: '由低風險 → 高風險排列',
-    items: [
-      { name:'🚢 方舟 EA',     val:'低',   desc:'RSI過濾，12層封頂保護',    color:'#2ECC71', pct:10  },
-      { name:'🪨 小磚',        val:'低',   desc:'微型手數，5/8優化升級',    color:'#2ECC71', pct:15  },
-      { name:'⚡ 雷神 EA',     val:'中低', desc:'單單止損，極速解單',       color:'#F39C12', pct:45  },
-      { name:'🕷️ 蜘蛛人對鎖', val:'中低', desc:'主動控倉，雙向佈局',       color:'#F39C12', pct:55  },
-      { name:'🐜 蟻人 EA',     val:'中',   desc:'雙向引擎，蟻群修剪系統',   color:'#E74C3C', pct:75  },
-    ]
-  },
-  capital: {
-    title: '💰 本金需求排行',
-    subtitle: '由低本金 → 高本金排列',
-    items: [
-      { name:'🚢 方舟 EA',     val:'1,000 ¢',   desc:'超低門檻，小資族首選',   color:'#3AAFE0', pct:1   },
-      { name:'⚡ 雷神 EA',     val:'100,000 ¢', desc:'標準配置，高效複利',     color:'#D4A017', pct:100 },
-      { name:'🕷️ 蜘蛛人對鎖', val:'100,000 ¢', desc:'雙向佈局，建議足額',     color:'#D4A017', pct:100 },
-      { name:'🪨 小磚',        val:'100,000 ¢', desc:'微型起步，5/8優化升級',  color:'#D4A017', pct:100 },
-      { name:'🐜 蟻人 EA',     val:'100,000 ¢', desc:'量子雙引擎，標準配置',   color:'#D4A017', pct:100 },
-    ]
-  }
-};
-
-  const rankData=rankData_inner;
-  const d=rankData[type];
-  if(!d)return;
-  const rows=d.items.map((item,i)=>{
-    const nc=i===0?'rn1':i===1?'rn2':i===2?'rn3':'rno';
-    return `<div class="rank-item"><div class="rank-num ${nc}">${i+1}</div><div class="rank-info"><div class="rank-name">${item.name}</div><div class="rank-desc">${item.desc}</div></div><div class="rank-bar-bg"><div class="rank-bar-fill" data-pct="${item.pct}" style="width:0%;background:${item.color}"></div></div><div class="rank-val" style="color:${item.color}">${item.val}</div></div>`;
-  }).join('');
-  document.getElementById('rankInner').innerHTML=`<div class="rank-hdr"><div class="rank-ttl">${d.title}</div><div class="rank-sub">${d.subtitle}</div></div><div class="rank-list">${rows}</div>`;
-  document.getElementById('rankOv').classList.add('on');
-  document.body.style.overflow='hidden';
-  setTimeout(()=>{document.querySelectorAll('.rank-bar-fill').forEach(el=>{el.style.width=el.dataset.pct+'%';});},120);
-}
-function closeRank(){document.getElementById('rankOv').classList.remove('on');document.body.style.overflow='';}
-function closeRankOuter(e){if(e.target===document.getElementById('rankOv'))closeRank();}
-
-function openPopup(key,e){
-  e&&e.stopPropagation();
-  const d=popups[key];
-  if(!d){console.error('No popup:',key);return;}
-  const risk_cls=d.risk==='低'?'b-low':d.risk==='中低'?'b-mid':'b-high';
-  document.getElementById('popInner').innerHTML=`
-    <div class="pop-hero" style="background:${d.bg}">
-      <div style="text-align:center;padding:20px;">
-        <div style="font-size:32px;margin-bottom:5px;">${d.title.split(' ')[0]}</div>
-        <div style="font-size:19px;font-weight:900;color:#D4A017;font-family:'Noto Serif TC',serif;">${d.title.substring(d.title.indexOf(' ')+1)}</div>
-        <div style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px;letter-spacing:1px;">${d.subtitle}</div>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="brand-block">
+        <div class="brand-tag">AI GOLD TRADE · 黃金隊長</div>
+        <div class="brand-title">復仇者戰隊</div>
+        <div class="brand-sub">EA 策略績效報告</div>
       </div>
+      <svg class="shield-big" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="38" fill="#1A237E" stroke="#FFD700" stroke-width="3"/>
+        <circle cx="40" cy="40" r="28" fill="none" stroke="#FFD700" stroke-width="1.5" opacity=".4"/>
+        <circle cx="40" cy="40" r="18" fill="none" stroke="#FFD700" stroke-width="1" opacity=".25"/>
+        <text x="40" y="52" text-anchor="middle" font-size="38" font-weight="900" fill="#FFD700" font-family="Arial,sans-serif">A</text>
+      </svg>
     </div>
-    <div class="pop-body">
-      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
-        <span class="b ${risk_cls}">風險：${d.risk}</span>
-        <span class="b b-cap">建議本金：${d.capital}</span>
-      </div>
-      <div class="pop-sec">
-        <div class="pop-sec-ttl"><div class="pop-icon" style="background:rgba(212,160,23,.12)">📋</div>策略核心說明</div>
-        <p style="font-size:13px;font-weight:600;color:var(--text);line-height:1.8;">${d.core}</p>
-      </div>
-      <div class="pop-sec">
-        <div class="pop-sec-ttl"><div class="pop-icon" style="background:var(--cyan-bg)">⚙️</div>關鍵參數</div>
-        <div class="feat-grid">${d.features.map(f=>`<div class="feat"><div class="feat-lbl">${f.label}</div><div class="feat-val">${f.value}</div></div>`).join('')}</div>
-      </div>
-      <div class="pop-sec">
-        <div class="pop-sec-ttl"><div class="pop-icon" style="background:rgba(106,27,154,.12)">⚖️</div>優缺點分析</div>
-        <div class="pros-cons">
-          <div class="pros"><div class="pros-ttl">✅ 優點</div><ul>${d.pros.map(p=>`<li>${p}</li>`).join('')}</ul></div>
-          <div class="cons"><div class="cons-ttl">⚠️ 缺點</div><ul>${d.cons.map(c=>`<li>${c}</li>`).join('')}</ul></div>
+    <div class="date-ribbon">📅 更新至 2026.06.05 &nbsp;｜&nbsp; 💲 美分帳戶（¢） &nbsp;｜&nbsp; 起始日 2026.05.21</div>
+  </div>
+
+  <!-- REBRAND BANNER -->
+  <div class="rebrand-banner">
+    <span class="rebrand-icon">⚠️</span>
+    <div class="rebrand-text">
+      已換券商 · 紀錄重新計算
+      <br><span>所有數據自 2026.05.21 新券商起算，歷史紀錄不納入計算範圍</span>
+    </div>
+  </div>
+
+  <!-- CARDS -->
+  <div class="cards">
+
+    <!-- 🐜 蟻人 -->
+    <div class="card card-antman">
+      <div class="card-accent"></div>
+      <div class="hero-banner">
+        <div class="hero-bg"></div>
+        <div class="speed-lines"></div>
+        <div class="hero-icon">🐜</div>
+        <div class="hero-text-block">
+          <div class="strategy-label">ANT-MAN EA</div>
+          <div class="strategy-name">蟻人 EA</div>
+          <div class="strategy-sub">量子震盪・蟻群修剪・全時段雙向</div>
         </div>
       </div>
-      <div class="av-excl">
-        <svg width="34" height="34" viewBox="0 0 52 52"><circle cx="26" cy="26" r="22" fill="none" stroke="#D4A017" stroke-width="2"/><text x="26" y="33" text-anchor="middle" font-size="20" font-weight="900" fill="#D4A017" font-family="Arial">A</text></svg>
-        <div class="av-excl-txt"><div class="av-excl-ttl">${d.avengers.label}</div><div class="av-excl-val">${d.avengers.params}</div></div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-label">最大回撤</div>
+            <div class="stat-value neg" style="font-size:18px">-50,517¢</div>
+            <div class="stat-unit">-42.93%</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">累計盈利</div>
+            <div class="stat-value" style="color:#69F0AE;font-size:24px">+32.33%</div>
+            <div class="stat-unit">+32,347¢</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">預估月收</div>
+            <div class="stat-value" style="color:#FFD700;font-size:22px">~92.7%</div>
+            <div class="stat-unit">100,000¢ 基準</div>
+          </div>
+        </div>
+        
+        <!-- 蟻人邏輯說明 -->
+        <div style="margin-bottom:14px;background:#0A1A0A;border:1px solid rgba(105,240,174,0.2);border-radius:6px;padding:12px 14px;">
+          <div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:#69F0AE;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+            ⚙️ 策略核心邏輯
+            <span style="flex:1;height:1px;background:rgba(105,240,174,0.2);display:block;"></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div style="background:rgba(105,240,174,0.06);border-radius:4px;padding:9px 10px;border-left:2px solid #2E7D32;">
+              <div style="font-size:9px;color:rgba(105,240,174,0.6);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">量子雙開引擎</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;line-height:1.5;">ADX自動換擋<br>CCI防假突破<br>DEMA動能確認</div>
+            </div>
+            <div style="background:rgba(105,240,174,0.06);border-radius:4px;padding:9px 10px;border-left:2px solid #2E7D32;">
+              <div style="font-size:9px;color:rgba(105,240,174,0.6);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">蟻群修剪系統</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;line-height:1.5;">AOE降維救火<br>同向6層拔釘<br>跨向4層觸發</div>
+            </div>
+            <div style="background:rgba(105,240,174,0.06);border-radius:4px;padding:9px 10px;border-left:2px solid #2E7D32;">
+              <div style="font-size:9px;color:rgba(105,240,174,0.6);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">紅燈特權</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;line-height:1.5;">趨勢瀑布追蹤<br>ATR動態間距<br>雙向無縫切換</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span style="background:rgba(46,125,50,0.3);border:1px solid rgba(105,240,174,0.25);border-radius:3px;padding:3px 8px;font-size:10px;color:#69F0AE;font-weight:700;">✅ 24H全自動</span>
+            <span style="background:rgba(46,125,50,0.3);border:1px solid rgba(105,240,174,0.25);border-radius:3px;padding:3px 8px;font-size:10px;color:#69F0AE;font-weight:700;">✅ 雙向佈局</span>
+            <span style="background:rgba(46,125,50,0.3);border:1px solid rgba(105,240,174,0.25);border-radius:3px;padding:3px 8px;font-size:10px;color:#69F0AE;font-weight:700;">✅ Cent帳戶適配</span>
+            <span style="background:rgba(46,125,50,0.3);border:1px solid rgba(105,240,174,0.25);border-radius:3px;padding:3px 8px;font-size:10px;color:#69F0AE;font-weight:700;">✅ 不戀戰不凹單</span>
+          </div>
+          <div style="margin-top:8px;display:flex;align-items:center;gap:8px;background:rgba(105,240,174,0.08);border:1px solid rgba(105,240,174,0.3);border-radius:4px;padding:7px 10px;">
+            <span style="font-size:14px;">🔧</span>
+            <span style="font-size:11px;color:#69F0AE;font-weight:900;letter-spacing:1px;">6/8 調整 · 更安全參數</span>
+          </div>
+        </div>
+        <div class="table-label" style="color:#69F0AE">近期戰績</div>
+        <table class="perf-table">
+          <thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
+          <tbody>
+            <tr class="new"><td>6/5<span class="new-badge">NEW</span></td><td class="pos">+1,387</td><td class="pos">+1.08%</td><td class="neg">-15,478</td><td class="neg">-11.66%</td></tr>
+            <tr><td>6/4</td><td class="pos">+2,566</td><td class="pos">+2.00%</td><td class="neg">-7,459</td><td class="neg">-5.77%</td></tr>
+            <tr><td>6/3</td><td class="pos">+2,688</td><td class="pos">+2.14%</td><td class="neg">-4,572</td><td class="neg">-3.63%</td></tr>
+            <tr><td>6/2</td><td class="pos">+2,091</td><td class="pos">+1.69%</td><td class="neg">-5,565</td><td class="neg">-4.48%</td></tr>
+            <tr><td>6/1</td><td class="pos">+3,326</td><td class="pos">+2.76%</td><td class="neg">-1,137</td><td class="neg">-0.94%</td></tr>
+            <tr><td>5/29</td><td class="pos">+2,369</td><td class="pos">+2.02%</td><td class="neg">-7,940</td><td class="neg">-6.63%</td></tr>
+            <tr><td>5/28</td><td class="pos">+1,304</td><td class="pos">+1.12%</td><td class="neg">-50,517</td><td class="neg">-42.93%</td></tr>
+            <tr><td>5/27</td><td class="pos">+3,326</td><td class="pos">+2.93%</td><td class="neg">-36,675</td><td class="neg">-32.06%</td></tr>
+          </tbody>
+        </table>
       </div>
-    </div>`;
-  document.getElementById('popOv').classList.add('on');
-  document.body.style.overflow='hidden';
-}
-function closePop(e){if(e.target===document.getElementById('popOv'))closePop2();}
-function closePop2(){document.getElementById('popOv').classList.remove('on');document.body.style.overflow='';}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePop2();closeRank();}});
+      <div class="card-footer">
+        <div class="acc-block">
+          <div class="acc-label">觀摩帳號</div>
+          <div class="acc-num" style="color:#69F0AE">MT5 平台</div>
+        </div>
+        <div class="float-block">
+          <div class="float-label">最新浮虧</div>
+          <div class="float-val">-15,478¢ (-11.66%)</div>
+        </div>
+      </div>
+    </div>
 
-function switchData(btn,showId,hideId){
-  btn.closest('.tbl-wrap').querySelectorAll('.tog-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  const sh=document.getElementById(showId),hd=document.getElementById(hideId);
-  if(sh)sh.style.display='';
-  if(hd)hd.style.display='none';
-}
+    <!-- 🐝 黃蜂 EA -->
+    <div class="card card-wasp">
+      <div class="card-accent"></div>
+      <div class="hero-banner">
+        <div class="hero-bg"></div>
+        <div class="speed-lines"></div>
+        <div class="hero-icon">🐝</div>
+        <div class="hero-text-block">
+          <div class="strategy-label">WASP EA · PRECISION</div>
+          <div class="strategy-name">黃蜂 EA</div>
+          <div class="strategy-sub">精準俯衝・小資高效・蟻人搭檔</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="stats-row">
+          <div class="stat">
+            <div class="stat-label">最大回撤</div>
+            <div class="stat-value neg" style="font-size:18px">-2,958¢</div>
+            <div class="stat-unit">-25.34%</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">累計盈利</div>
+            <div class="stat-value" style="color:#FFD700;font-size:24px">+18.67%</div>
+            <div class="stat-unit">+1,867¢ / 10,000¢</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">預估月收</div>
+            <div class="stat-value" style="color:#FFC107;font-size:22px">~45.6%</div>
+            <div class="stat-unit">10,000¢ 基準</div>
+          </div>
+        </div>
+        
+        <!-- 黃蜂邏輯說明 -->
+        <div style="margin-bottom:14px;background:#1A1200;border:1px solid rgba(255,215,0,0.2);border-radius:6px;padding:12px 14px;">
+          <div style="font-family:'Bebas Neue',cursive;font-size:11px;letter-spacing:3px;color:#FFD700;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+            ⚙️ 策略核心邏輯
+            <span style="flex:1;height:1px;background:rgba(255,215,0,0.2);display:block;"></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+            <div style="background:rgba(255,215,0,0.05);border-radius:4px;padding:9px 10px;border-left:2px solid #F9A825;">
+              <div style="font-size:9px;color:rgba(255,215,0,0.6);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">雙向網格對沖</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;line-height:1.5;">多空同步佈局<br>網格精準捕捉<br>震盪行情收割</div>
+            </div>
+            <div style="background:rgba(255,215,0,0.05);border-radius:4px;padding:9px 10px;border-left:2px solid #F9A825;">
+              <div style="font-size:9px;color:rgba(255,215,0,0.6);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">Stop掛單法</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;line-height:1.5;">急速漲跌停損<br>順勢突破進場<br>極速行情安全</div>
+            </div>
+            <div style="background:rgba(255,215,0,0.05);border-radius:4px;padding:9px 10px;border-left:2px solid #F9A825;">
+              <div style="font-size:9px;color:rgba(255,215,0,0.6);font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">1.05倍溫和加倉</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.8);font-weight:600;line-height:1.5;">超級安全倍率<br>低風險加倉節奏<br>長期穩定複利</div>
+            </div>
+          </div>
+          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span style="background:rgba(249,168,37,0.15);border:1px solid rgba(255,215,0,0.25);border-radius:3px;padding:3px 8px;font-size:10px;color:#FFD700;font-weight:700;">✅ 急速行情安全</span>
+            <span style="background:rgba(249,168,37,0.15);border:1px solid rgba(255,215,0,0.25);border-radius:3px;padding:3px 8px;font-size:10px;color:#FFD700;font-weight:700;">✅ 1.05倍超安全加倉</span>
+            <span style="background:rgba(249,168,37,0.15);border:1px solid rgba(255,215,0,0.25);border-radius:3px;padding:3px 8px;font-size:10px;color:#FFD700;font-weight:700;">✅ 雙向對沖不凹單</span>
+            <span style="background:rgba(249,168,37,0.15);border:1px solid rgba(255,215,0,0.25);border-radius:3px;padding:3px 8px;font-size:10px;color:#FFD700;font-weight:700;">✅ 回測483%驗證</span>
+          </div>
+        </div>
+        <div class="table-label" style="color:#FFD700">近期戰績</div>
+        <table class="perf-table">
+          <thead><tr><th>日期</th><th>盈虧¢</th><th>盈虧%</th><th>浮虧¢</th><th>浮虧%</th></tr></thead>
+          <tbody>
+            <tr class="new"><td>6/5<span class="new-badge">NEW</span></td><td class="pos">+229</td><td class="pos">+2.29%</td><td class="neg">-952</td><td class="neg">-9.52%</td></tr>
+            <tr><td>6/4</td><td class="pos">+156</td><td class="pos">+1.56%</td><td class="neg">-338</td><td class="neg">-3.38%</td></tr>
+            <tr><td>6/3</td><td class="pos">+192</td><td class="pos">+1.92%</td><td class="neg">-122</td><td class="neg">-1.22%</td></tr>
+            <tr><td>6/2</td><td class="pos">+102</td><td class="pos">+1.02%</td><td class="neg">-1,158</td><td class="neg">-11.58%</td></tr>
+            <tr><td>6/1</td><td class="pos">+172</td><td class="pos">+1.72%</td><td class="neg">-86</td><td class="neg">-0.86%</td></tr>
+            <tr><td>5/29</td><td class="pos">+130</td><td class="pos">+1.30%</td><td class="neg">-1,019</td><td class="neg">-10.19%</td></tr>
+            <tr><td>5/28</td><td class="pos">+95</td><td class="pos">+0.95%</td><td class="neg">-3,415</td><td class="neg">-34.15%</td></tr>
+            <tr><td>5/27</td><td class="pos">+549</td><td class="pos">+5.49%</td><td class="neg">-1,269</td><td class="neg">-12.69%</td></tr>
+            <tr><td>5/26</td><td class="pos">+139</td><td class="pos">+1.39%</td><td class="neg">-117</td><td class="neg">-1.17%</td></tr>
+            <tr><td>5/25</td><td class="pos">+102</td><td class="pos">+1.02%</td><td class="neg">-147</td><td class="neg">-1.47%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer">
+        <div class="acc-block">
+          <div class="acc-label">平台</div>
+          <div class="acc-num" style="color:#FFD700">MT5 平台</div>
+        </div>
+        <div class="float-block">
+          <div class="float-label">最新浮虧</div>
+          <div class="float-val">-952¢ (-9.52%)</div>
+        </div>
+      </div>
+    </div>
 
-function copyAcc(n){
-  if(!n||n==='待提供')return;
-  navigator.clipboard.writeText(n).then(()=>{
-    const t=document.getElementById('toast');
-    t.textContent='✅ 帳號 '+n+' 已複製！';
-    t.style.display='block';
-    setTimeout(()=>t.style.display='none',2200);
-  });
-}
+</div><!-- end cards -->
 
-(function(){
-  const cv=document.getElementById('bgCanvas'),cx=cv.getContext('2d');
-  let W,H;
-  function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
-  resize();window.addEventListener('resize',resize);
-  const pts=Array.from({length:55},()=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*2+.5,vx:(Math.random()-.5)*.4,vy:-Math.random()*.5-.15,a:Math.random(),c:Math.random()>.5?'#C8960A':'#D4A017'}));
-  let lts=[],nxt=Date.now()+2000;
-  function rndLt(){const x=Math.random()*W*.7+W*.15,segs=[];let cx2=x,cy=0;while(cy<H*.65){const nx=cx2+(Math.random()-.5)*70,ny=cy+Math.random()*55+18;segs.push({x1:cx2,y1:cy,x2:nx,y2:ny});cx2=nx;cy=ny;if(Math.random()<.28){segs.push({x1:cx2,y1:cy,x2:cx2+(Math.random()-.5)*50,y2:cy+Math.random()*35+8,br:true});}}return{segs,life:16,maxLife:16,gold:Math.random()>.55};}
-  function drLt(l){const a=l.life/l.maxLife;l.segs.forEach(s=>{cx.save();cx.globalAlpha=a*(s.br?.12:.18);cx.strokeStyle=l.gold?'#D4A017':'#88BBFF';cx.lineWidth=s.br?3:7;cx.beginPath();cx.moveTo(s.x1,s.y1);cx.lineTo(s.x2,s.y2);cx.stroke();cx.restore();cx.save();cx.globalAlpha=a*(s.br?.3:.8);cx.strokeStyle=l.gold?'#FFF0AA':'#DDEEFF';cx.lineWidth=s.br?.7:1.6;cx.beginPath();cx.moveTo(s.x1,s.y1);cx.lineTo(s.x2,s.y2);cx.stroke();cx.restore();});}
-  function frame(){cx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a+=(Math.random()-.5)*.04;p.a=Math.max(.05,Math.min(.75,p.a));if(p.y<-8){p.y=H+5;p.x=Math.random()*W;}cx.save();cx.globalAlpha=p.a*.4;cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fill();cx.restore();});const now=Date.now();if(now>nxt){lts.push(rndLt());nxt=now+2200+Math.random()*3500;}lts=lts.filter(l=>l.life>0);lts.forEach(l=>{drLt(l);l.life--;});requestAnimationFrame(frame);}
-  frame();
-})();
-</script>
+  <!-- POSTER FOOTER -->
+  <div class="poster-footer">
+    <div class="footer-left">
+      AI GOLD TRADE · 復仇者戰隊<br>
+      黃金隊長 · EA 量化交易
+    </div>
+    <div class="footer-disc">
+      本資料僅供參考，不構成任何投資建議。外匯及差價合約交易涉及重大風險，過往績效不代表未來表現。<br>
+      所有金額單位為美分（¢），已換券商，數據自 2026.05.21 起重新計算。
+    </div>
+  </div>
+
+</div>
 </body>
 </html>
